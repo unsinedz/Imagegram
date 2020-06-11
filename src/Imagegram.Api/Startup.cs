@@ -1,4 +1,5 @@
 using Imagegram.Api.Extensions;
+using Imagegram.Api.Mvc.ResultFilters;
 using Imagegram.Api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -19,7 +20,10 @@ namespace Imagegram.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(config =>
+            {
+                config.Filters.Add(new ShortenedProblemDetailsResultFilter());
+            }).AddNewtonsoftJson();
 
             services.Configure<ConnectionStringOptions>(Configuration.GetSection("ConnectionStrings"));
 
