@@ -10,14 +10,15 @@ create table [dbo].[Posts] (
     [CreatorId] uniqueidentifier not null,
     [CreatedAt] datetime2 not null,
     primary key ([Id]),
-    foreign key ([CreatorId]) references [dbo].[Accounts]([Id])
+    foreign key ([CreatorId]) references [dbo].[Accounts]([Id]) on delete cascade
 );
 
 create table [dbo].[Comments] (
     [Id] uniqueidentifier not null,
     [Content] nvarchar(500) not null,
+    [PostId] uniqueidentifier not null,
     [CreatorId] uniqueidentifier not null,
     [CreatedAt] datetime2 not null,
     primary key ([Id]),
-    foreign key ([CreatorId]) references [dbo].[Accounts]([Id])
+    foreign key ([CreatorId]) references [dbo].[Accounts]([Id]) on delete cascade
 );
