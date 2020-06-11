@@ -1,34 +1,38 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Imagegram.Api.Extensions;
+using Imagegram.Api.Mvc.ResultFilters;
+using Imagegram.Api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace Imagegram.Api
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(config =>
+            {
+                config.Filters.Add(new ShortenedProblemDetailsResultFilter());
+            }).AddNewtonsoftJson();
+
+            services.Configure<ConnectionStringOptions>(Configuration.GetSection("ConnectionStrings"));
+
+            services.AddAutoMapper();
+
+            services.AddTransient<IDbConnectionFactory, MsSqlConnectionFactory>();
+            services.AddTransient<IAccountRepository, AccountRepository>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
