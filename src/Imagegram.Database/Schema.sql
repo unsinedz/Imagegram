@@ -33,6 +33,7 @@ begin
     	,CreatedAt
     	,CommentId
     	,CommentContent
+        ,CommentCreator
     	,CommentCreatedAt
     from (
     select p.Id as PostId
@@ -41,11 +42,12 @@ begin
     	,p.CreatedAt
     	,c.Id as CommentId
     	,c.Content as CommentContent
+        ,c.CreatorId as CommentCreator
     	,c.CreatedAt as CommentCreatedAt
     	,row_number() over (partition by p.Id order by count(c.Id), c.CreatedAt desc) as CommentRank
     from Posts p
     left join Comments c on p.Id = c.PostId
-    group by p.Id, p.ImageUrl, p.CreatorId, p.CreatedAt, c.Id, c.Content, c.CreatedAt
+    group by p.Id, p.ImageUrl, p.CreatorId, p.CreatedAt, c.Id, c.Content, c.CreatorId, c.CreatedAt
     ) ranks
     where CommentRank <= @lastCount
 end;
