@@ -6,6 +6,7 @@ namespace Imagegram.Api.Models.Entity
     [Table("Posts")]
     public class Post
     {
+        [ExplicitKey]
         public Guid Id { get; set; }
 
         public string ImageUrl { get; set; }

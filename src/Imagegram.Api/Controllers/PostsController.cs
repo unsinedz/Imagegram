@@ -33,7 +33,7 @@ namespace Imagegram.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiModels.Post>> PostAsync([Required, FromBody] ApiModels.PostInput postInput)
+        public async Task<ActionResult<ApiModels.Post>> PostAsync([Required, FromForm] ApiModels.PostInput postInput)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

@@ -16,7 +16,7 @@ namespace Imagegram.Api.Services
             this.webHostEnvironment = webHostEnvironment;
             this.fileStorageOptions = fileStorageOptions;
         }
-        
+
         /// <summary>
         /// Saves file to storage.
         /// </summary>
@@ -33,6 +33,10 @@ namespace Imagegram.Api.Services
 
             var relativePath = GetRelativePathToFile(fileName);
             var fullName = GetFullPath(relativePath);
+            var targetDirectory = Path.GetDirectoryName(fullName);
+            if (!Directory.Exists(targetDirectory))
+                Directory.CreateDirectory(targetDirectory);
+            
             if (File.Exists(fullName))
                 throw new InvalidOperationException("File already exists.");
 

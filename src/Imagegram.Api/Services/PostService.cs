@@ -1,6 +1,8 @@
 using System;
 using System.Drawing.Imaging;
 using System.Threading.Tasks;
+using Imagegram.Api.Extensions;
+using Microsoft.Extensions.Logging;
 using EntityModels = Imagegram.Api.Models.Entity;
 
 namespace Imagegram.Api.Services
@@ -13,32 +15,41 @@ namespace Imagegram.Api.Services
         private readonly IImageConverter imageConverter;
         private readonly IFileService fileService;
         private readonly ICurrentUtcDateProvider currentUtcDateProvider;
+        private readonly ILogger<PostService> logger;
 
         public PostService(
             IPostRepository postRepository,
             IImageConverter imageConverter,
             IFileService fileService,
-            ICurrentUtcDateProvider currentUtcDateProvider)
+            ICurrentUtcDateProvider currentUtcDateProvider,
+            ILogger<PostService> logger)
         {
             this.postRepository = postRepository;
             this.imageConverter = imageConverter;
             this.fileService = fileService;
             this.currentUtcDateProvider = currentUtcDateProvider;
+            this.logger = logger;
         }
 
         public async Task<EntityModels.Post> CreateAsync(EntityModels.Post post, ImageDescriptor postImage)
         {
             var jpegBytes = imageConverter.ConvertToFormat(postImage.Content, ImageFormat.Jpeg);
-            post.ImageUrl = await fileService.SaveFileAsync(GenerateRandomImageName(DesiredImageExtension), jpegBytes);
+            post.ImageUrl = (await fileService.SaveFileAsync(GenerateRandomImageName(DesiredImageExtension), jpegBytes)).ConvertToUrlPath();
             post.CreatedAt = currentUtcDateProvider.UtcNow;
             try
             {
                 return await postRepository.CreateAsync(post);
             }
-            catch // execute for any exception type
+            catch (Exception e) // execute for any exception type
             {
-                await fileService.DeleteFileAsync(post.ImageUrl);
+                await RevertWithLog(e.ToString());
                 throw;
+            }
+
+            async Task RevertWithLog(string details)
+            {
+                logger.LogError("Post was not saved. Details: {0}.", details);
+                await fileService.DeleteFileAsync(post.ImageUrl);
             }
         }
 
