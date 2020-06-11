@@ -51,7 +51,7 @@ namespace Imagegram.Api.Services
                 throw new ArgumentException($"File name cannot be null or whitespace.", nameof(fileName));
 
             var fullName = GetFullPath(fileName);
-            File.Delete(fileName);
+            File.Delete(fullName);
             return Task.CompletedTask;
         }
 
