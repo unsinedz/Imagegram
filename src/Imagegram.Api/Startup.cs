@@ -30,7 +30,10 @@ namespace Imagegram.Api
             services.AddAutoMapper();
 
             services.AddTransient<IDbConnectionFactory, MsSqlConnectionFactory>();
+            services.AddTransient<ICurrentUtcDateProvider, CurrentUtcDateProvider>();
+            
             services.AddTransient<IAccountRepository, AccountRepository>();
+            services.AddTransient<IPostRepository, PostRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

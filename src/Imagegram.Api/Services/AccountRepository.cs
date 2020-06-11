@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
 using Microsoft.Extensions.Options;
@@ -7,15 +6,11 @@ using EntityModels = Imagegram.Api.Models.Entity;
 
 namespace Imagegram.Api.Services
 {
-    public class AccountRepository : IAccountRepository
+    public class AccountRepository : RepositoryBase, IAccountRepository
     {
-        private readonly string connectionString;
-        private readonly IDbConnectionFactory connectionFactory;
-
         public AccountRepository(IOptions<ConnectionStringOptions> connectionStringOptions, IDbConnectionFactory connectionFactory)
+            : base(connectionStringOptions.Value.Default, connectionFactory)
         {
-            this.connectionString = connectionStringOptions.Value.Default;
-            this.connectionFactory = connectionFactory;
         }
 
         public async Task<EntityModels.Account> CreateAsync(EntityModels.Account account)
@@ -30,13 +25,6 @@ namespace Imagegram.Api.Services
                 await connection.InsertAsync(account);
                 return account;
             }
-        }
-
-        private IDbConnection OpenConnection()
-        {
-            var connection = connectionFactory.Create(connectionString);
-            connection.Open();
-            return connection;
         }
     }
 }
