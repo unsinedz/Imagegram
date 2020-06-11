@@ -26,11 +26,14 @@ namespace Imagegram.Api
             }).AddNewtonsoftJson();
 
             services.Configure<ConnectionStringOptions>(Configuration.GetSection("ConnectionStrings"));
+            services.Configure<FileStorageOptions>(Configuration.GetSection("FileStorage"));
 
             services.AddAutoMapper();
 
             services.AddTransient<IDbConnectionFactory, MsSqlConnectionFactory>();
             services.AddTransient<ICurrentUtcDateProvider, CurrentUtcDateProvider>();
+
+            services.AddTransient<IImageConverter, ImageConverter>();
             
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IPostRepository, PostRepository>();
