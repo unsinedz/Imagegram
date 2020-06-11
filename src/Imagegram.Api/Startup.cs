@@ -27,6 +27,7 @@ namespace Imagegram.Api
 
             services.Configure<ConnectionStringOptions>(Configuration.GetSection("ConnectionStrings"));
             services.Configure<FileStorageOptions>(Configuration.GetSection("FileStorage"));
+            services.Configure<PostOptions>(Configuration.GetSection("Posts"));
 
             services.AddAutoMapper();
 
@@ -34,6 +35,7 @@ namespace Imagegram.Api
             services.AddTransient<ICurrentUtcDateProvider, CurrentUtcDateProvider>();
 
             services.AddTransient<IImageConverter, ImageConverter>();
+            services.AddTransient<IImageService, ImageService>();
             
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IPostRepository, PostRepository>();
