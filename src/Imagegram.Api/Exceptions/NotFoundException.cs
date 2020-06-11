@@ -1,12 +1,9 @@
 using System;
-using Microsoft.AspNetCore.Http;
 
 namespace Imagegram.Api.Exceptions
 {
-    public class NotFoundException : Exception, IStatusCodeException
+    public class NotFoundException : Exception
     {
-        public int StatusCode => StatusCodes.Status404NotFound;
-
         public NotFoundException()
         {
         }

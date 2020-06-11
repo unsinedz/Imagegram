@@ -18,13 +18,18 @@ namespace Imagegram.Api.Controllers
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public class PostsController : ControllerBase
     {
-        private readonly IPostRepository postRepository;
         private readonly IMapper mapper;
+        private readonly IPostService postService;
+        private readonly IImageService imageService;
 
-        public PostsController(IPostRepository postRepository, IMapper mapper)
+        public PostsController(
+            IMapper mapper,
+            IPostService postService,
+            IImageService imageService)
         {
-            this.postRepository = postRepository;
             this.mapper = mapper;
+            this.postService = postService;
+            this.imageService = imageService;
         }
 
         [HttpPost]
@@ -33,9 +38,11 @@ namespace Imagegram.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            // TODO: do smth with postInput.Image
-            var post = await postRepository.CreateAsync(mapper.Map<EntityModels.Post>(postInput));
-            post.CreatorId = User.GetId();
+            var postToCreate = mapper.Map<EntityModels.Post>(postInput);
+            postToCreate.CreatorId = User.GetId();
+
+            var imageDescriptor = await imageService.GetImageDescriptorAsync(postInput.Image);
+            var post = await postService.CreateAsync(postToCreate, imageDescriptor);
             return mapper.Map<ApiModels.Post>(post);
         }
     }

@@ -24,13 +24,14 @@ namespace Imagegram.Api.Services
 
         public async Task<ImageDescriptor> GetImageDescriptorAsync(IFormFile input)
         {
-            ValidateExtension(Path.GetExtension(input.FileName));
-            ValidateFileSize(input.Length);
-
             var imageDescriptor = new ImageDescriptor
             {
-                FileName = input.FileName
+                FileExtension = Path.GetExtension(input.FileName)
             };
+
+            ValidateExtension(imageDescriptor.FileExtension);
+            ValidateFileSize(input.Length);
+
             using (var stream = new MemoryStream())
             {
                 await input.CopyToAsync(stream);
@@ -43,14 +44,14 @@ namespace Imagegram.Api.Services
         private void ValidateExtension(string extension)
         {
             if (!supportedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
-                throw new InvalidFileException("File format is not supported.");
+                throw new ArgumentException("File format is not supported.");
         }
 
         private void ValidateFileSize(long bytesCount)
         {
             var kbSize = bytesCount / (1 << 10);
             if (kbSize > maxFileSizeKb)
-                throw new InvalidFileException("File size is too large.");
+                throw new ArgumentException("File size is too large.");
         }
     }
 }

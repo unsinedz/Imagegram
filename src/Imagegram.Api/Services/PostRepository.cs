@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
-using Imagegram.Api.Models.Entity;
 using Microsoft.Extensions.Options;
 using EntityModels = Imagegram.Api.Models.Entity;
 
