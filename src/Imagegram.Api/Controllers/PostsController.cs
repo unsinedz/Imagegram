@@ -40,9 +40,6 @@ namespace Imagegram.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<ApiModels.Post>> PostAsync([Required, FromForm] ApiModels.PostInput postInput)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var postToCreate = mapper.Map<EntityModels.Post>(postInput);
             postToCreate.CreatorId = User.GetId();
 
