@@ -11,8 +11,8 @@ namespace Imagegram.Api.SqlTypeMaps
         {
             if (value is byte[] bytes) // timestamp
                 return BitConverter.ToInt64(bytes.Reverse().ToArray());
-            else
-                return Convert.ToInt64(value);
+            
+            return Convert.ToInt64(value);
         }
 
         public override void SetValue(IDbDataParameter parameter, long value)
