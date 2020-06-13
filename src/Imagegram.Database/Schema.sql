@@ -45,7 +45,7 @@ begin
 			,p.[ImageUrl]
 			,p.[CreatorId]
 			,p.[CreatedAt]
-			,p.[VersionCursor]
+			,CONVERT(bigint, p.[VersionCursor]) as [VersionCursor]
 		from [dbo].[Posts] p
 		left join [dbo].[Comments] c on c.[PostId]= p.[Id]'
 		+ @where +

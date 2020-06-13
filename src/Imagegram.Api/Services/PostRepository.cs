@@ -37,13 +37,13 @@ namespace Imagegram.Api.Services
             }
         }
 
-        public async Task<ICollection<EntityModels.Post>> GetLatestAsync(int limit, long previousPostCursor)
+        public async Task<ICollection<EntityModels.Post>> GetLatestAsync(int? limit, long? previousPostCursor)
         {
             using (var connection = OpenConnection())
             {
                 var posts = await connection.QueryAsync<EntityModels.Post>(
-                    "exec [dbo].[spSelectLatestPosts] @limit=@_limit @previousPostCursor=@_previousPostCursor",
-                    new { _limit = limit, _previousPostCursor = previousPostCursor },
+                    "[dbo].[spSelectLatestPosts]",
+                    new { limit, previousPostCursor },
                     commandType: CommandType.StoredProcedure);
                 return posts.AsList();
             }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Threading.Tasks;
 using Imagegram.Api.Extensions;
@@ -51,6 +52,11 @@ namespace Imagegram.Api.Services
                 logger.LogError("Post was not saved. Details: {0}.", details);
                 await fileService.DeleteFileAsync(post.ImageUrl);
             }
+        }
+
+        public async Task<ICollection<EntityModels.Post>> GetLatestAsync(int? limit, long? previousPostCursor)
+        {
+            return await postRepository.GetLatestAsync(limit, previousPostCursor);
         }
 
         private string GenerateRandomImageName(string desiredExtension)

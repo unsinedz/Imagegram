@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -44,6 +46,13 @@ namespace Imagegram.Api.Controllers
             var imageDescriptor = await imageService.GetImageDescriptorAsync(postInput.Image);
             var post = await postService.CreateAsync(postToCreate, imageDescriptor);
             return mapper.Map<ApiModels.Post>(post);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<ICollection<ApiModels.Post>>> GetAsync(int? limit, long? previousPostCursor)
+        {
+            var posts = await postService.GetLatestAsync(limit, previousPostCursor);
+            return posts.Select(x => mapper.Map<ApiModels.Post>(x)).ToList();
         }
     }
 }
