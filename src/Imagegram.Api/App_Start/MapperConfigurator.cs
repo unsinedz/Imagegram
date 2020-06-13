@@ -19,6 +19,7 @@ namespace Imagegram.Api
             config.CreateMap<ProjectionModels.Account, ApiModels.Account>();
 
             config.CreateMap<ApiModels.PostInput, EntityModels.Post>();
+            config.CreateMap<EntityModels.Post, ApiModels.Post>();
             config.CreateMap<EntityModels.Post, ProjectionModels.Post>();
             config.CreateMap<ProjectionModels.Post, ApiModels.Post>()
                 .ForMember(
