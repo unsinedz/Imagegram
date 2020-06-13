@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using AutoMapper;
+using Imagegram.Api.Extensions;
 using Imagegram.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -33,6 +34,14 @@ namespace Imagegram.Api.Controllers
         public async Task<ApiModels.Account> PostAsync([Required, FromBody] ApiModels.AccountInput accountInput)
         {
             var account = await accountService.CreateAsync(mapper.Map<EntityModels.Account>(accountInput));
+            return mapper.Map<ApiModels.Account>(account);
+        }
+
+        [HttpDelete("me")]
+        public async Task<ApiModels.Account> DeleteAsync()
+        {
+            var accountId = User.GetId();
+            var account = await accountService.DeleteAsync(accountId);
             return mapper.Map<ApiModels.Account>(account);
         }
     }
