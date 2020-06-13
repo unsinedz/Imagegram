@@ -35,6 +35,7 @@ namespace Imagegram.Api
             services.Configure<PostOptions>(Configuration.GetSection("Posts"));
 
             services.AddAutoMapper();
+            services.AddSwagger();
 
             services.AddTransient<IDbConnectionFactory, MsSqlConnectionFactory>();
             services.AddTransient<ICurrentUtcDateProvider, CurrentUtcDateProvider>();
@@ -64,6 +65,12 @@ namespace Imagegram.Api
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(x =>
+            {
+                x.SwaggerEndpoint($"/swagger/{Constants.Api.Version}/swagger.json", $"{Constants.Api.Name} {Constants.Api.Version}");
+            });
 
             app.UseRouting();
 
