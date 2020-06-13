@@ -49,7 +49,7 @@ namespace Imagegram.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ICollection<ApiModels.Post>> GetAsync(int? limit, long? previousPostCursor)
+        public async Task<ICollection<ApiModels.Post>> GetAllAsync(int? limit, long? previousPostCursor)
         {
             var posts = await postService.GetLatestAsync(limit, previousPostCursor);
             return posts.Select(x => mapper.Map<ApiModels.Post>(x)).ToList();
