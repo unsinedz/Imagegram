@@ -44,6 +44,7 @@ namespace Imagegram.Api
             
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IPostRepository, PostRepository>();
+            services.AddTransient<ICommentRepository, CommentRepository>();
 
             services.AddAuthentication(AuthenticationSchemes.HeaderBased)
                 .AddScheme<AuthenticationSchemeOptions, HeaderBasedAuthenticationHandler>(AuthenticationSchemes.HeaderBased, configureOptions: null);
