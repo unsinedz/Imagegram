@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+using System.Reflection;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -22,6 +25,10 @@ namespace Imagegram.Api.Extensions
                     Title = Constants.Api.Name,
                     Version = Constants.Api.Version
                 });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                x.IncludeXmlComments(xmlPath);
             });
             return services;
         }

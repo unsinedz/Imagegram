@@ -37,6 +37,11 @@ namespace Imagegram.Api.Controllers
             this.imageService = imageService;
         }
 
+        /// <summary>
+        /// Creates a new post.
+        /// </summary>
+        /// <param name="postInput">The post input data.</param>
+        /// <returns>An instance of created post.</returns>
         [HttpPost]
         public async Task<ApiModels.Post> PostAsync([Required, FromForm] ApiModels.PostInput postInput)
         {
@@ -47,7 +52,16 @@ namespace Imagegram.Api.Controllers
             var post = await postService.CreateAsync(postToCreate, imageDescriptor);
             return mapper.Map<ApiModels.Post>(post);
         }
-
+        
+        /// <summary>
+        /// Get list of posts.
+        /// </summary>
+        /// <param name="limit">The amount of posts to return.</param>
+        /// <param name="previousPostCursor">The cursor to the previous post.</param>
+        /// <returns>
+        /// A list of posts, that contains maximum <paramref name="limit" /> comments, that were
+        /// created before the comment, whose <paramref name="previousPostCursor" /> was specified.
+        /// </returns>
         [HttpGet]
         public async Task<ICollection<ApiModels.Post>> GetAsync(int? limit, long? previousPostCursor)
         {

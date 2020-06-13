@@ -29,6 +29,11 @@ namespace Imagegram.Api.Controllers
             this.mapper = mapper;
         }
 
+        /// <summary>
+        /// Creates new account.
+        /// </summary>
+        /// <param name="accountInput">The account input data.</param>
+        /// <returns>An instance of created account.</returns>
         [HttpPost]
         [AllowAnonymous]
         public async Task<ApiModels.Account> PostAsync([Required, FromBody] ApiModels.AccountInput accountInput)
@@ -37,6 +42,10 @@ namespace Imagegram.Api.Controllers
             return mapper.Map<ApiModels.Account>(account);
         }
 
+        /// <summary>
+        /// Deletes current account.
+        /// </summary>
+        /// <returns>An instance of deleted account.</returns>
         [HttpDelete("me")]
         public async Task<ApiModels.Account> DeleteAsync()
         {
