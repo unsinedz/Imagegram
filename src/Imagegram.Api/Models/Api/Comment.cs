@@ -12,5 +12,7 @@ namespace Imagegram.Api.Models.Api
         public ApiModels.Account Creator { get; set; }
 
         public DateTime CreatedAt { get; set; }
+
+        public long Cursor { get; set; }
     }
 }

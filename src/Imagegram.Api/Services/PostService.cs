@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Imagegram.Api.Extensions;
 using Microsoft.Extensions.Logging;
 using EntityModels = Imagegram.Api.Models.Entity;
+using ProjectionModels = Imagegram.Api.Models.Projection;
 
 namespace Imagegram.Api.Services
 {
@@ -13,22 +16,28 @@ namespace Imagegram.Api.Services
         private const string DesiredImageExtension = ".jpg";
         
         private readonly IPostRepository postRepository;
+        private readonly IAccountRepository accountRepository;
         private readonly IImageConverter imageConverter;
         private readonly IFileService fileService;
         private readonly ICurrentUtcDateProvider currentUtcDateProvider;
+        private readonly IMapper mapper;
         private readonly ILogger<PostService> logger;
 
         public PostService(
             IPostRepository postRepository,
+            IAccountRepository accountRepository,
             IImageConverter imageConverter,
             IFileService fileService,
             ICurrentUtcDateProvider currentUtcDateProvider,
+            IMapper mapper,
             ILogger<PostService> logger)
         {
             this.postRepository = postRepository;
+            this.accountRepository = accountRepository;
             this.imageConverter = imageConverter;
             this.fileService = fileService;
             this.currentUtcDateProvider = currentUtcDateProvider;
+            this.mapper = mapper;
             this.logger = logger;
         }
 
@@ -54,9 +63,17 @@ namespace Imagegram.Api.Services
             }
         }
 
-        public async Task<ICollection<EntityModels.Post>> GetLatestAsync(int? limit, long? previousPostCursor)
+        public async Task<ICollection<ProjectionModels.Post>> GetLatestAsync(int? limit, long? previousPostCursor)
         {
-            return await postRepository.GetLatestAsync(limit, previousPostCursor);
+            var posts = await postRepository.GetLatestAsync(limit, previousPostCursor);
+            var accounts = (await accountRepository.GetAsync(posts.Select(x => x.CreatorId).ToArray()))
+                .ToDictionary(x => x.Id);
+            return posts.Select(x =>
+            {
+                var post = mapper.Map<ProjectionModels.Post>(x);
+                post.Creator = mapper.Map<ProjectionModels.Account>(accounts[x.CreatorId]);
+                return post;
+            }).ToList();
         }
 
         private string GenerateRandomImageName(string desiredExtension)

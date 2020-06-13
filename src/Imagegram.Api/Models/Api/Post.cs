@@ -15,5 +15,7 @@ namespace Imagegram.Api.Models.Api
         public DateTime CreatedAt { get; set; }
 
         public ICollection<ApiModels.Comment> Comments { get; set; } = new List<ApiModels.Comment>(0);
+
+        public long Cursor { get; set; }
     }
 }

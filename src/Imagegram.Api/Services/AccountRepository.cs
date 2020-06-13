@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Dapper;
 using Dapper.Contrib.Extensions;
 using Microsoft.Extensions.Options;
 using EntityModels = Imagegram.Api.Models.Entity;
@@ -24,6 +26,17 @@ namespace Imagegram.Api.Services
             {
                 await connection.InsertAsync(account);
                 return account;
+            }
+        }
+
+        public async Task<ICollection<EntityModels.Account>> GetAsync(params Guid[] ids)
+        {
+            using (var connection = OpenConnection())
+            {
+                var accounts = await connection.QueryAsync<EntityModels.Account>(
+                    "select * from [dbo].[Accounts] where [Id] in @ids",
+                    new { ids });
+                return accounts.AsList();
             }
         }
     }

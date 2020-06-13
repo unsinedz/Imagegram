@@ -4,7 +4,7 @@ using Dapper.Contrib.Extensions;
 namespace Imagegram.Api.Models.Entity
 {
     [Table("Posts")]
-    public class Post
+    public class Post : ICursoredModel
     {
         [ExplicitKey]
         public Guid Id { get; set; }
