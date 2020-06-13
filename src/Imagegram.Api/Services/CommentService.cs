@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Imagegram.Api.Exceptions;
-using Imagegram.Api.Models.Entity;
 using EntityModels = Imagegram.Api.Models.Entity;
 
 namespace Imagegram.Api.Services
@@ -26,6 +26,13 @@ namespace Imagegram.Api.Services
 
             var createdId = await commentRepository.CreateAsync(comment);
             return await commentRepository.GetAsync(createdId);
+        }
+
+        public async Task<ICollection<EntityModels.Comment>> GetAllAsync(Guid postId, int? limit, long? previousCommentCursor)
+        {
+            await ValidatePostIdAsync(postId);
+
+            return await commentRepository.GetByPostAsync(postId, limit, previousCommentCursor);
         }
 
         private async Task ValidatePostIdAsync(Guid postId)

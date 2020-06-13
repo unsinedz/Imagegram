@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Imagegram.Api.Extensions;
@@ -38,6 +40,13 @@ namespace Imagegram.Api.Controllers
 
             var createdComment = await commentService.CreateAsync(comment);
             return mapper.Map<ApiModels.Comment>(createdComment);
+        }
+
+        [HttpGet("posts/{postId:required}/[controller]")]
+        public async Task<ICollection<ApiModels.Comment>> GetAllAsync(Guid postId, int? limit, long? previousCommentCursor)
+        {
+            var comments = await commentService.GetAllAsync(postId, limit, previousCommentCursor);
+            return comments.Select(x => mapper.Map<ApiModels.Comment>(x)).ToList();
         }
     }
 }
