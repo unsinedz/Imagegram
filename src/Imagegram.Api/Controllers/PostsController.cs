@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Imagegram.Api.Extensions;
 using Imagegram.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ApiModels = Imagegram.Api.Models.Api;
@@ -17,7 +18,9 @@ namespace Imagegram.Api.Controllers
     [Route("[controller]")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize]
     public class PostsController : ControllerBase
     {
         private readonly IMapper mapper;

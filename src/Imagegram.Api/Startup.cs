@@ -1,11 +1,14 @@
+using Imagegram.Api.Authentication;
 using Imagegram.Api.Extensions;
 using Imagegram.Api.Mvc.ResultFilters;
 using Imagegram.Api.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using AuthenticationSchemes = Imagegram.Api.Authentication.Schemes;
 
 namespace Imagegram.Api
 {
@@ -41,6 +44,9 @@ namespace Imagegram.Api
             
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IPostRepository, PostRepository>();
+
+            services.AddAuthentication(AuthenticationSchemes.HeaderBased)
+                .AddScheme<AuthenticationSchemeOptions, HeaderBasedAuthenticationHandler>(AuthenticationSchemes.HeaderBased, configureOptions: null);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -56,6 +62,7 @@ namespace Imagegram.Api
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
