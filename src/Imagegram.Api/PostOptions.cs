@@ -5,5 +5,7 @@ namespace Imagegram.Api
         public string SupportedImageFormats { get; set; }
 
         public int MaxFileSizeKb { get; set; }
+
+        public int FetchCommentsLimit { get; set; }
     }
 }

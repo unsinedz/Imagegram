@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Imagegram.Api.Mvc.ResultFilters
 {
-    public class ShortenedProblemDetailsResultFilter : IResultFilter
+    public class ShortenedProblemDetailsResultFilter : IResultFilter, IAlwaysRunResultFilter
     {
         public void OnResultExecuted(ResultExecutedContext context)
         {

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using Dapper;
+using Imagegram.Api.SqlTypeMaps;
 using ApiModels = Imagegram.Api.Models.Api;
 using EntityModels = Imagegram.Api.Models.Entity;
 using ProjectionModels = Imagegram.Api.Models.Projection;
@@ -11,11 +13,11 @@ namespace Imagegram.Api
     {
         public static void ConfigureMappings(IMapperConfigurationExpression config)
         {
-            config.CreateMap<ApiModels.AccountInput, EntityModels.Account>().ReverseMap();
+            config.CreateMap<ApiModels.AccountInput, EntityModels.Account>();
             config.CreateMap<EntityModels.Account, ProjectionModels.Account>();
             config.CreateMap<ProjectionModels.Account, ApiModels.Account>();
 
-            config.CreateMap<ApiModels.PostInput, EntityModels.Post>().ReverseMap();
+            config.CreateMap<ApiModels.PostInput, EntityModels.Post>();
             config.CreateMap<EntityModels.Post, ProjectionModels.Post>();
             config.CreateMap<ProjectionModels.Post, ApiModels.Post>()
                 .ForMember(
@@ -28,8 +30,12 @@ namespace Imagegram.Api
                             ?? new List<ApiModels.Comment>(0)))
                 .ForMember(x => x.Cursor, x => x.MapFrom(source => source.VersionCursor));
 
+            config.CreateMap<ApiModels.CommentInput, EntityModels.Comment>();
+            config.CreateMap<EntityModels.Comment, ProjectionModels.Comment>();
             config.CreateMap<ProjectionModels.Comment, ApiModels.Comment>()
                 .ForMember(x => x.Cursor, x => x.MapFrom(source => source.VersionCursor));
+
+            SqlMapper.AddTypeHandler(typeof(long), new Int64Handler());
         }
     }
 }

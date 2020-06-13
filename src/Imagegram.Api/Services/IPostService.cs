@@ -7,7 +7,7 @@ namespace Imagegram.Api.Services
 {
     public interface IPostService
     {
-        Task<EntityModels.Post> CreateAsync(EntityModels.Post post, ImageDescriptor postImage);
-        Task<ICollection<ProjectionModels.Post>> GetLatestAsync(int? limit, long? previousPostCursor);
+        Task<ProjectionModels.Post> CreateAsync(EntityModels.Post post, ImageDescriptor postImage);
+        Task<ICollection<ProjectionModels.Post>> GetAsync(int? limit, long? previousPostCursor);
     }
 }

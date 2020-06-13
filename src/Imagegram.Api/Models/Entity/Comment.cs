@@ -11,6 +11,8 @@ namespace Imagegram.Api.Models.Entity
 
         public string Content { get; set; }
 
+        public Guid PostId { get; set; }
+
         public Guid CreatorId { get; set; }
 
         public DateTime CreatedAt { get; set; }

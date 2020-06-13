@@ -19,23 +19,20 @@ namespace Imagegram.Api.Controllers
     [Authorize]
     public class AccountsController : ControllerBase
     {
-        private readonly IAccountRepository accountRepository;
+        private readonly IAccountService accountService;
         private readonly IMapper mapper;
 
-        public AccountsController(IAccountRepository accountRepository, IMapper mapper)
+        public AccountsController(IAccountService accountRepository, IMapper mapper)
         {
-            this.accountRepository = accountRepository;
+            this.accountService = accountRepository;
             this.mapper = mapper;
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult<ApiModels.Account>> PostAsync([Required, FromBody] ApiModels.AccountInput accountInput)
+        public async Task<ApiModels.Account> PostAsync([Required, FromBody] ApiModels.AccountInput accountInput)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            
-            var account = await accountRepository.CreateAsync(mapper.Map<EntityModels.Account>(accountInput));
+            var account = await accountService.CreateAsync(mapper.Map<EntityModels.Account>(accountInput));
             return mapper.Map<ApiModels.Account>(account);
         }
     }

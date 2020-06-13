@@ -1,5 +1,6 @@
 using Imagegram.Api.Authentication;
 using Imagegram.Api.Extensions;
+using Imagegram.Api.Mvc.ExceptionFilters;
 using Imagegram.Api.Mvc.ResultFilters;
 using Imagegram.Api.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -25,6 +26,7 @@ namespace Imagegram.Api
         {
             services.AddControllers(config =>
             {
+                config.Filters.Add(new StatusCodeExceptionActionFilter());
                 config.Filters.Add(new ShortenedProblemDetailsResultFilter());
             }).AddNewtonsoftJson();
 
@@ -39,11 +41,14 @@ namespace Imagegram.Api
 
             services.AddTransient<IImageConverter, ImageConverter>();
             services.AddTransient<IImageService, ImageService>();
+            services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IPostService, PostService>();
+            services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<IFileService, FileService>();
             
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IPostRepository, PostRepository>();
+            services.AddTransient<ICommentRepository, CommentRepository>();
 
             services.AddAuthentication(AuthenticationSchemes.HeaderBased)
                 .AddScheme<AuthenticationSchemeOptions, HeaderBasedAuthenticationHandler>(AuthenticationSchemes.HeaderBased, configureOptions: null);
