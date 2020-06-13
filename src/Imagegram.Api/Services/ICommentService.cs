@@ -8,7 +8,7 @@ namespace Imagegram.Api.Services
 {
     public interface ICommentService
     {
-        Task<EntityModels.Comment> CreateAsync(EntityModels.Comment comment);
+        Task<ProjectionModels.Comment> CreateAsync(EntityModels.Comment comment);
         Task<ICollection<ProjectionModels.Comment>> GetAsync(Guid postId, int? limit, long? previousCommentCursor);
     }
 }

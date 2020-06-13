@@ -28,7 +28,7 @@ namespace Imagegram.Api.Services
             this.mapper = mapper;
         }
 
-        public async Task<EntityModels.Comment> CreateAsync(EntityModels.Comment comment)
+        public async Task<ProjectionModels.Comment> CreateAsync(EntityModels.Comment comment)
         {
             if (comment is null)
                 throw new ArgumentNullException(nameof(comment));
@@ -36,7 +36,13 @@ namespace Imagegram.Api.Services
             await ValidatePostIdAsync(comment.PostId);
 
             var createdId = await commentRepository.CreateAsync(comment);
-            return await commentRepository.GetAsync(createdId);
+            var commentTask = commentRepository.GetAsync(createdId);
+            var accountTask = accountRepository.GetAsync(comment.CreatorId);
+            await Task.WhenAll(commentTask, accountTask);
+
+            var commentProjection = mapper.Map<ProjectionModels.Comment>(commentTask.Result);
+            commentProjection.Creator = mapper.Map<ProjectionModels.Account>(accountTask.Result.Single());
+            return commentProjection;
         }
 
         public async Task<ICollection<ProjectionModels.Comment>> GetAsync(Guid postId, int? limit, long? previousCommentCursor)
