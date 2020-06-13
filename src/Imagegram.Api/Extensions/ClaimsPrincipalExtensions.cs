@@ -5,10 +5,16 @@ namespace Imagegram.Api.Extensions
 {
     public static class ClaimsPrincipalExtensions
     {
+        /// <summary>
+        /// Gets account ID from the claims.
+        /// </summary>
+        /// <param name="claimsPrincipal">Current claims principal.</param>
+        /// <returns>The account ID if the claim is present.</returns>
+        /// <exception cref="System.InvalidOperationException">Thrown when the claim is not present (user is not authenticated, etc.).</exception>
         public static Guid GetId(this ClaimsPrincipal claimsPrincipal)
         {
-            return Guid.Parse("2DA06B5B-CAEC-4E31-8396-3960F0ABB3F4");
-            return Guid.Parse(claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier));
+            var claimValue = claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Guid.Parse(claimValue);
         }
     }
 }
