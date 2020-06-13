@@ -7,7 +7,7 @@ namespace Imagegram.Api.Services
 {
     public interface IPostRepository
     {
-        Task<EntityModels.Post> CreateAsync(EntityModels.Post post);
+        Task<Guid> CreateAsync(EntityModels.Post post);
         Task<EntityModels.Post> GetAsync(Guid id);
         Task<ICollection<EntityModels.Post>> GetLatestAsync(int? limit, long? previousPostCursor);
     }

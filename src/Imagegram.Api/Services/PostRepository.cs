@@ -22,7 +22,7 @@ namespace Imagegram.Api.Services
             this.currentUtcDateProvider = currentUtcDateProvider;
         }
 
-        public async Task<EntityModels.Post> CreateAsync(EntityModels.Post post)
+        public async Task<Guid> CreateAsync(EntityModels.Post post)
         {
             if (post is null)
                 throw new ArgumentNullException(nameof(post));
@@ -33,7 +33,7 @@ namespace Imagegram.Api.Services
             using (var connection = OpenConnection())
             {
                 await connection.InsertAsync(post);
-                return post;
+                return post.Id;
             }
         }
 

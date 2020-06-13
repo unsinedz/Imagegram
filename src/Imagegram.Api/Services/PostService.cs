@@ -14,7 +14,7 @@ namespace Imagegram.Api.Services
     public class PostService : IPostService
     {
         private const string DesiredImageExtension = ".jpg";
-        
+
         private readonly IPostRepository postRepository;
         private readonly IAccountRepository accountRepository;
         private readonly IImageConverter imageConverter;
@@ -41,26 +41,31 @@ namespace Imagegram.Api.Services
             this.logger = logger;
         }
 
-        public async Task<EntityModels.Post> CreateAsync(EntityModels.Post post, ImageDescriptor postImage)
+        public async Task<ProjectionModels.Post> CreateAsync(EntityModels.Post post, ImageDescriptor postImage)
         {
             var jpegBytes = imageConverter.ConvertToFormat(postImage.Content, ImageFormat.Jpeg);
             post.ImageUrl = (await fileService.SaveFileAsync(GenerateRandomImageName(DesiredImageExtension), jpegBytes)).ConvertToUrlPath();
             post.CreatedAt = currentUtcDateProvider.UtcNow;
+
+            Guid createdId;
             try
             {
-                return await postRepository.CreateAsync(post);
+                createdId = await postRepository.CreateAsync(post);
             }
             catch (Exception e) // execute for any exception type
             {
-                await RevertWithLog(e.ToString());
+                logger.LogError("Post was not saved. Details: {0}.", e.ToString());
+                await fileService.DeleteFileAsync(post.ImageUrl);
                 throw;
             }
 
-            async Task RevertWithLog(string details)
-            {
-                logger.LogError("Post was not saved. Details: {0}.", details);
-                await fileService.DeleteFileAsync(post.ImageUrl);
-            }
+            var postTask = postRepository.GetAsync(createdId);
+            var accountsTask = accountRepository.GetAsync(post.CreatorId);
+            await Task.WhenAll(postTask, accountsTask);
+
+            var postProjection = mapper.Map<ProjectionModels.Post>(postTask.Result);
+            postProjection.Creator = mapper.Map<ProjectionModels.Account>(accountsTask.Result.Single());
+            return postProjection;
         }
 
         public async Task<ICollection<ProjectionModels.Post>> GetLatestAsync(int? limit, long? previousPostCursor)

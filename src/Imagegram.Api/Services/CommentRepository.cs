@@ -40,7 +40,7 @@ namespace Imagegram.Api.Services
             }
         }
 
-        public async Task<ICollection<EntityModels.Comment>> GetByPostAsync(Guid postId, int? limit, long? previousCommentCursor)
+        public async Task<ICollection<EntityModels.Comment>> GetLatestByPostAsync(Guid postId, int? limit, long? previousCommentCursor)
         {
             using (var connection = OpenConnection())
             {

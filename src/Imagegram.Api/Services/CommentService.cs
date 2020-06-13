@@ -37,19 +37,19 @@ namespace Imagegram.Api.Services
 
             var createdId = await commentRepository.CreateAsync(comment);
             var commentTask = commentRepository.GetAsync(createdId);
-            var accountTask = accountRepository.GetAsync(comment.CreatorId);
-            await Task.WhenAll(commentTask, accountTask);
+            var accountsTask = accountRepository.GetAsync(comment.CreatorId);
+            await Task.WhenAll(commentTask, accountsTask);
 
             var commentProjection = mapper.Map<ProjectionModels.Comment>(commentTask.Result);
-            commentProjection.Creator = mapper.Map<ProjectionModels.Account>(accountTask.Result.Single());
+            commentProjection.Creator = mapper.Map<ProjectionModels.Account>(accountsTask.Result.Single());
             return commentProjection;
         }
 
-        public async Task<ICollection<ProjectionModels.Comment>> GetAsync(Guid postId, int? limit, long? previousCommentCursor)
+        public async Task<ICollection<ProjectionModels.Comment>> GetLatestByPostAsync(Guid postId, int? limit, long? previousCommentCursor)
         {
             await ValidatePostIdAsync(postId);
 
-            var comments = await commentRepository.GetByPostAsync(postId, limit, previousCommentCursor);
+            var comments = await commentRepository.GetLatestByPostAsync(postId, limit, previousCommentCursor);
             var accounts = (await accountRepository.GetAsync(comments.Select(x => x.CreatorId).Distinct().ToArray()))
                 .ToDictionary(x => x.Id);
             return comments.Select(x =>
