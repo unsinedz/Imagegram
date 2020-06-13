@@ -49,7 +49,7 @@ namespace Imagegram.Api.Services
         {
             await ValidatePostIdAsync(postId);
 
-            var comments = await commentRepository.GetLatestByPostAsync(postId, limit, previousCommentCursor);
+            var comments = await commentRepository.GetByPostAsync(postId, limit, previousCommentCursor);
             var accounts = (await accountRepository.GetAsync(comments.Select(x => x.CreatorId).Distinct().ToArray()))
                 .ToDictionary(x => x.Id);
             return comments.Select(x =>

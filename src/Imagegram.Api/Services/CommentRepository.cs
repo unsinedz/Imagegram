@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 using Dapper;
 using Dapper.Contrib.Extensions;
+using Imagegram.Api.Extensions;
 using Microsoft.Extensions.Options;
 using EntityModels = Imagegram.Api.Models.Entity;
 
@@ -40,7 +42,7 @@ namespace Imagegram.Api.Services
             }
         }
 
-        public async Task<ICollection<EntityModels.Comment>> GetLatestByPostAsync(Guid postId, int? limit, long? previousCommentCursor)
+        public async Task<ICollection<EntityModels.Comment>> GetByPostAsync(Guid postId, int? limit, long? previousCommentCursor)
         {
             using (var connection = OpenConnection())
             {
@@ -55,6 +57,19 @@ namespace Imagegram.Api.Services
                     where [{nameof(EntityModels.Comment.PostId)}] = @postId{cursorExpression}
                     order by {nameof(EntityModels.Comment.CreatedAt)} desc",
                     new { postId, limit, previousCommentCursor });
+                return comments.AsList();
+            }
+        }
+
+        public async Task<ICollection<EntityModels.Comment>> GetLatestForPostsAsync(ICollection<Guid> postIds, int? limit)
+        {
+            using (var connection = OpenConnection())
+            {
+                var comments = await connection.QueryAsync<EntityModels.Comment>(
+                    "[dbo].[spSelectLastPostComments]",
+                    new { commentLimit = limit, postIds = postIds.ToUdtIds() },
+                    commandType: CommandType.StoredProcedure
+                );
                 return comments.AsList();
             }
         }
