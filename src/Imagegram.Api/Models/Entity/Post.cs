@@ -14,5 +14,8 @@ namespace Imagegram.Api.Models.Entity
         public Guid CreatorId { get; set; }
 
         public DateTime CreatedAt { get; set; }
+
+        [Write(false)]
+        public long VersionCursor { get; set; }
     }
 }

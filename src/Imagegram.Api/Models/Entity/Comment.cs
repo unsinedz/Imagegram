@@ -1,9 +1,12 @@
 using System;
+using Dapper.Contrib.Extensions;
 
 namespace Imagegram.Api.Models.Entity
 {
+    [Table("Comments")]
     public class Comment
     {
+        [ExplicitKey]
         public Guid Id { get; set; }
 
         public string Content { get; set; }
@@ -11,5 +14,8 @@ namespace Imagegram.Api.Models.Entity
         public Guid CreatorId { get; set; }
 
         public DateTime CreatedAt { get; set; }
+
+        [Write(false)]
+        public long VersionCursor { get; set; }
     }
 }
