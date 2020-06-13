@@ -1,7 +1,6 @@
 using Imagegram.Api.Authentication;
 using Imagegram.Api.Extensions;
 using Imagegram.Api.Mvc.ExceptionFilters;
-using Imagegram.Api.Mvc.ResultFilters;
 using Imagegram.Api.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -27,7 +26,6 @@ namespace Imagegram.Api
             services.AddControllers(config =>
             {
                 config.Filters.Add(new StatusCodeExceptionActionFilter());
-                config.Filters.Add(new ShortenedProblemDetailsResultFilter());
             }).AddNewtonsoftJson();
 
             services.Configure<ConnectionStringOptions>(Configuration.GetSection("ConnectionStrings"));
