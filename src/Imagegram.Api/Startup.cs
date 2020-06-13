@@ -41,6 +41,7 @@ namespace Imagegram.Api
 
             services.AddTransient<IImageConverter, ImageConverter>();
             services.AddTransient<IImageService, ImageService>();
+            services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IPostService, PostService>();
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<IFileService, FileService>();
