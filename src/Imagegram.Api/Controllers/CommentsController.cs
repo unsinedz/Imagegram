@@ -20,12 +20,12 @@ namespace Imagegram.Api.Controllers
     [Authorize]
     public class CommentsController : ControllerBase
     {
-        private readonly ICommentRepository commentRepository;
+        private readonly ICommentService commentService;
         private readonly IMapper mapper;
 
-        public CommentsController(ICommentRepository commentRepository, IMapper mapper)
+        public CommentsController(ICommentService commentService, IMapper mapper)
         {
-            this.commentRepository = commentRepository;
+            this.commentService = commentService;
             this.mapper = mapper;
         }
 
@@ -36,8 +36,8 @@ namespace Imagegram.Api.Controllers
             comment.CreatorId = User.GetId();
             comment.PostId = postId;
 
-            var createdId = await commentRepository.CreateAsync(comment);
-            return mapper.Map<ApiModels.Comment>(await commentRepository.GetAsync(createdId));
+            var createdComment = await commentService.CreateAsync(comment);
+            return mapper.Map<ApiModels.Comment>(createdComment);
         }
     }
 }

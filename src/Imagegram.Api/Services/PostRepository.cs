@@ -37,6 +37,14 @@ namespace Imagegram.Api.Services
             }
         }
 
+        public async Task<EntityModels.Post> GetAsync(Guid id)
+        {
+            using (var connection = OpenConnection())
+            {
+                return await connection.GetAsync<EntityModels.Post>(id);
+            }
+        }
+
         public async Task<ICollection<EntityModels.Post>> GetLatestAsync(int? limit, long? previousPostCursor)
         {
             using (var connection = OpenConnection())
