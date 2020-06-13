@@ -30,7 +30,7 @@ namespace Imagegram.Api.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult<ApiModels.Account>> PostAsync([Required, FromBody] ApiModels.AccountInput accountInput)
+        public async Task<ApiModels.Account> PostAsync([Required, FromBody] ApiModels.AccountInput accountInput)
         {
             var account = await accountRepository.CreateAsync(mapper.Map<EntityModels.Account>(accountInput));
             return mapper.Map<ApiModels.Account>(account);

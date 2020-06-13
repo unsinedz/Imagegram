@@ -30,7 +30,7 @@ namespace Imagegram.Api.Controllers
         }
 
         [HttpPost("posts/{postId:required}/[controller]")]
-        public async Task<ActionResult<ApiModels.Comment>> PostAsync([FromBody, Required] ApiModels.CommentInput commentInput, Guid postId)
+        public async Task<ApiModels.Comment> PostAsync([FromBody, Required] ApiModels.CommentInput commentInput, Guid postId)
         {
             var comment = mapper.Map<EntityModels.Comment>(commentInput);
             comment.CreatorId = User.GetId();

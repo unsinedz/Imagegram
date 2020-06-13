@@ -38,7 +38,7 @@ namespace Imagegram.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiModels.Post>> PostAsync([Required, FromForm] ApiModels.PostInput postInput)
+        public async Task<ApiModels.Post> PostAsync([Required, FromForm] ApiModels.PostInput postInput)
         {
             var postToCreate = mapper.Map<EntityModels.Post>(postInput);
             postToCreate.CreatorId = User.GetId();
@@ -49,7 +49,7 @@ namespace Imagegram.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ICollection<ApiModels.Post>>> GetAsync(int? limit, long? previousPostCursor)
+        public async Task<ICollection<ApiModels.Post>> GetAsync(int? limit, long? previousPostCursor)
         {
             var posts = await postService.GetLatestAsync(limit, previousPostCursor);
             return posts.Select(x => mapper.Map<ApiModels.Post>(x)).ToList();
