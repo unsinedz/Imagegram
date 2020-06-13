@@ -39,5 +39,13 @@ namespace Imagegram.Api.Services
                 return accounts.AsList();
             }
         }
+
+        public async Task DeleteAsync(Guid id)
+        {
+            using (var connection = OpenConnection())
+            {
+                await connection.ExecuteAsync("delete from [dbo].[Accounts] where [Id] = @id", new { id });
+            }
+        }
     }
 }
