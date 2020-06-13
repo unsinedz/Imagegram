@@ -1,21 +1,18 @@
 using System;
-using System.Data;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Dapper;
 using Dapper.Contrib.Extensions;
 using Microsoft.Extensions.Options;
 using EntityModels = Imagegram.Api.Models.Entity;
 
 namespace Imagegram.Api.Services
 {
-    public class AccountRepository : IAccountRepository
+    public class AccountRepository : RepositoryBase, IAccountRepository
     {
-        private readonly string connectionString;
-        private readonly IDbConnectionFactory connectionFactory;
-
         public AccountRepository(IOptions<ConnectionStringOptions> connectionStringOptions, IDbConnectionFactory connectionFactory)
+            : base(connectionStringOptions.Value.Default, connectionFactory)
         {
-            this.connectionString = connectionStringOptions.Value.Default;
-            this.connectionFactory = connectionFactory;
         }
 
         public async Task<EntityModels.Account> CreateAsync(EntityModels.Account account)
@@ -32,11 +29,15 @@ namespace Imagegram.Api.Services
             }
         }
 
-        private IDbConnection OpenConnection()
+        public async Task<ICollection<EntityModels.Account>> GetAsync(params Guid[] ids)
         {
-            var connection = connectionFactory.Create(connectionString);
-            connection.Open();
-            return connection;
+            using (var connection = OpenConnection())
+            {
+                var accounts = await connection.QueryAsync<EntityModels.Account>(
+                    "select * from [dbo].[Accounts] where [Id] in @ids",
+                    new { ids });
+                return accounts.AsList();
+            }
         }
     }
 }

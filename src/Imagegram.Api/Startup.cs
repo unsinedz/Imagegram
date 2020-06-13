@@ -26,11 +26,21 @@ namespace Imagegram.Api
             }).AddNewtonsoftJson();
 
             services.Configure<ConnectionStringOptions>(Configuration.GetSection("ConnectionStrings"));
+            services.Configure<FileStorageOptions>(Configuration.GetSection("FileStorage"));
+            services.Configure<PostOptions>(Configuration.GetSection("Posts"));
 
             services.AddAutoMapper();
 
             services.AddTransient<IDbConnectionFactory, MsSqlConnectionFactory>();
+            services.AddTransient<ICurrentUtcDateProvider, CurrentUtcDateProvider>();
+
+            services.AddTransient<IImageConverter, ImageConverter>();
+            services.AddTransient<IImageService, ImageService>();
+            services.AddTransient<IPostService, PostService>();
+            services.AddTransient<IFileService, FileService>();
+            
             services.AddTransient<IAccountRepository, AccountRepository>();
+            services.AddTransient<IPostRepository, PostRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -41,6 +51,8 @@ namespace Imagegram.Api
             }
 
             app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
 
             app.UseRouting();
 
