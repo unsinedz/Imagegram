@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Imagegram.Api.Exceptions;
 using EntityModels = Imagegram.Api.Models.Entity;
+using ProjectionModels = Imagegram.Api.Models.Projection;
 
 namespace Imagegram.Api.Services
 {
@@ -10,11 +13,19 @@ namespace Imagegram.Api.Services
     {
         private readonly ICommentRepository commentRepository;
         private readonly IPostRepository postRepository;
+        private readonly IAccountRepository accountRepository;
+        private readonly IMapper mapper;
 
-        public CommentService(ICommentRepository commentRepository, IPostRepository postRepository)
+        public CommentService(
+            ICommentRepository commentRepository,
+            IPostRepository postRepository,
+            IAccountRepository accountRepository,
+            IMapper mapper)
         {
             this.commentRepository = commentRepository;
             this.postRepository = postRepository;
+            this.accountRepository = accountRepository;
+            this.mapper = mapper;
         }
 
         public async Task<EntityModels.Comment> CreateAsync(EntityModels.Comment comment)
@@ -28,11 +39,19 @@ namespace Imagegram.Api.Services
             return await commentRepository.GetAsync(createdId);
         }
 
-        public async Task<ICollection<EntityModels.Comment>> GetAllAsync(Guid postId, int? limit, long? previousCommentCursor)
+        public async Task<ICollection<ProjectionModels.Comment>> GetAsync(Guid postId, int? limit, long? previousCommentCursor)
         {
             await ValidatePostIdAsync(postId);
 
-            return await commentRepository.GetByPostAsync(postId, limit, previousCommentCursor);
+            var comments = await commentRepository.GetByPostAsync(postId, limit, previousCommentCursor);
+            var accounts = (await accountRepository.GetAsync(comments.Select(x => x.CreatorId).Distinct().ToArray()))
+                .ToDictionary(x => x.Id);
+            return comments.Select(x =>
+            {
+                var comment = mapper.Map<ProjectionModels.Comment>(x);
+                comment.Creator = mapper.Map<ProjectionModels.Account>(accounts[x.CreatorId]);
+                return comment;
+            }).ToList();
         }
 
         private async Task ValidatePostIdAsync(Guid postId)

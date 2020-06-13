@@ -66,7 +66,7 @@ namespace Imagegram.Api.Services
         public async Task<ICollection<ProjectionModels.Post>> GetLatestAsync(int? limit, long? previousPostCursor)
         {
             var posts = await postRepository.GetLatestAsync(limit, previousPostCursor);
-            var accounts = (await accountRepository.GetAsync(posts.Select(x => x.CreatorId).ToArray()))
+            var accounts = (await accountRepository.GetAsync(posts.Select(x => x.CreatorId).Distinct().ToArray()))
                 .ToDictionary(x => x.Id);
             return posts.Select(x =>
             {
