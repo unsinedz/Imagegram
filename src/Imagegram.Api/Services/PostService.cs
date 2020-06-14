@@ -51,7 +51,8 @@ namespace Imagegram.Api.Services
         public async Task<ProjectionModels.Post> CreateAsync(EntityModels.Post post, ImageDescriptor postImage)
         {
             var jpegBytes = imageConverter.ConvertToFormat(postImage.Content, ImageFormat.Jpeg);
-            post.ImageUrl = (await fileService.SaveFileAsync(GenerateRandomImageName(DesiredImageExtension), jpegBytes)).ConvertToUrlPath();
+            post.ImageUrl = (await fileService.SaveFileAsync(GenerateRandomImageName(DesiredImageExtension), jpegBytes))
+                .ConvertToUrlPath();
             post.CreatedAt = currentUtcDateProvider.UtcNow;
 
             Guid createdId;

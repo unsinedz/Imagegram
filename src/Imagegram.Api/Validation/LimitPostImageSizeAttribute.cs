@@ -23,7 +23,8 @@ namespace Imagegram.Api.Validation
             if (!(value is IFormFile formFile))
                 throw new InvalidOperationException($"{nameof(LimitPostImageSizeAttribute)} can only be applied to {nameof(IFormFile)} properties.");
 
-            var maxFileSizeKb = ((IOptions<PostOptions>)validationContext.GetService(typeof(IOptions<PostOptions>))).Value.MaxFileSizeKb;
+            var postOptions = (IOptions<PostOptions>)validationContext.GetService(typeof(IOptions<PostOptions>));
+            var maxFileSizeKb = postOptions.Value.MaxFileSizeKb;
             if (formFile.Length > maxFileSizeKb * 1e3)
                 return new ValidationResult(GetErrorMessage(maxFileSizeKb));
 

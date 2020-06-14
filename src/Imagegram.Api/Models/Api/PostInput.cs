@@ -8,6 +8,7 @@ namespace Imagegram.Api.Models.Api
     {
         [Required]
         [LimitPostImageSize]
+        [RestrictPostImageExtensions]
         public IFormFile Image { get; set; }
     }
 }
