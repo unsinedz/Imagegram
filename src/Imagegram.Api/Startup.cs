@@ -23,6 +23,7 @@ namespace Imagegram.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddResponseCompression();
             services.AddControllers(config =>
             {
                 config.Filters.Add(new StatusCodeExceptionFilter());
@@ -44,7 +45,7 @@ namespace Imagegram.Api
             services.AddTransient<IPostService, PostService>();
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<IFileService, FileService>();
-            
+
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IPostRepository, PostRepository>();
             services.AddTransient<ICommentRepository, CommentRepository>();
@@ -56,13 +57,12 @@ namespace Imagegram.Api
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
-
-            app.UseHttpsRedirection();
+            else
+                app.UseHttpsRedirection();
 
             app.UseStaticFiles();
+            app.UseResponseCompression();
 
             app.UseSwagger();
             app.UseSwaggerUI(x =>
