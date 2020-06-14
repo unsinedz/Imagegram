@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Imagegram.Api.Mvc.ExceptionFilters
 {
-    public class StatusCodeExceptionActionFilter : IExceptionFilter
+    public class StatusCodeExceptionFilter : IExceptionFilter
     {
         public void OnException(ExceptionContext context)
         {

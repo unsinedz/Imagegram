@@ -25,7 +25,7 @@ namespace Imagegram.Api
         {
             services.AddControllers(config =>
             {
-                config.Filters.Add(new StatusCodeExceptionActionFilter());
+                config.Filters.Add(new StatusCodeExceptionFilter());
             }).AddNewtonsoftJson();
 
             services.Configure<ConnectionStringOptions>(Configuration.GetSection("ConnectionStrings"));
