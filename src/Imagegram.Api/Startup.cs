@@ -23,7 +23,6 @@ namespace Imagegram.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddResponseCompression();
             services.AddControllers(config =>
             {
                 config.Filters.Add(new StatusCodeExceptionFilter());
@@ -62,7 +61,6 @@ namespace Imagegram.Api
                 app.UseHttpsRedirection();
 
             app.UseStaticFiles();
-            app.UseResponseCompression();
 
             app.UseSwagger();
             app.UseSwaggerUI(x =>
