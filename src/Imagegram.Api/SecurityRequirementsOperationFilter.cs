@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Imagegram.Api.Mvc.OperationFilters
+namespace Imagegram.Api
 {
     public class SecurityRequirementsOperationFilter : IOperationFilter
     {

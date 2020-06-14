@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using AutoMapper;
-using Imagegram.Api.Mvc.OperationFilters;
+using Imagegram.Api;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
