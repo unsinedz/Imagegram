@@ -47,14 +47,14 @@ begin
 			,p.[CreatedAt]
 			,CONVERT(bigint, p.[VersionCursor]) as [VersionCursor]
 		from [dbo].[Posts] p
-		left join [dbo].[Comments] c on c.[PostId]= p.[Id]'
+		left join [dbo].[Comments] c on c.[PostId] = p.[Id]'
 		+ @where +
 		' group by p.[Id]
 			,p.[ImageUrl]
 			,p.[CreatorId]
 			,p.[CreatedAt]
 			,p.[VersionCursor]
-		order by count(c.[Id]) desc';
+		order by count(c.[Id]) desc, p.[CreatedAt] desc';
 
 	exec sp_executesql @sql
 end
