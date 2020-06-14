@@ -12,7 +12,6 @@ namespace Imagegram.Api.Authentication
 {
     public class HeaderBasedAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        private const string HeaderName = "X-Account-Id";
         private readonly IAccountRepository accountRepository;
 
         public HeaderBasedAuthenticationHandler(
@@ -27,16 +26,17 @@ namespace Imagegram.Api.Authentication
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            if (!Request.Headers.TryGetValue(HeaderName, out var accountIdValue))
-                return AuthenticateResult.Fail($"Missing {HeaderName} header.");
+            var headerName = Constants.Authorization.HeaderName;
+            if (!Request.Headers.TryGetValue(headerName, out var accountIdValue))
+                return AuthenticateResult.Fail($"Missing {headerName} header.");
 
             if (!Guid.TryParse(accountIdValue.ToString(), out var accountId))
-                return AuthenticateResult.Fail($"Invalid {HeaderName} header value.");
+                return AuthenticateResult.Fail($"Invalid {headerName} header value.");
 
             var existingAccount = (await accountRepository.GetAsync(accountId)).SingleOrDefault();
             if (existingAccount == null)
                 return AuthenticateResult.Fail($"Account does not exist.");
-            
+
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, accountId.ToString()),
