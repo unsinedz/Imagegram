@@ -3,7 +3,7 @@ using System.Data;
 
 namespace Imagegram.Api.Extensions
 {
-    public static class EnumerableToUdtExtensions
+    public static class IEnumerableExtensions
     {        
         public static DataTable ToUdtIds<T>(this IEnumerable<T> enumerable)
         {

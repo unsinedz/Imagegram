@@ -31,6 +31,12 @@ namespace Imagegram.Api.Controllers
             this.mapper = mapper;
         }
 
+        /// <summary>
+        /// Creates a comment to a post.
+        /// </summary>
+        /// <param name="commentInput">The comment input data.</param>
+        /// <param name="postId">The post ID.</param>
+        /// <returns>An instance of created comment.</returns>
         [HttpPost("posts/{postId:required}/[controller]")]
         public async Task<ApiModels.Comment> PostAsync([FromBody, Required] ApiModels.CommentInput commentInput, Guid postId)
         {
@@ -42,6 +48,17 @@ namespace Imagegram.Api.Controllers
             return mapper.Map<ApiModels.Comment>(createdComment);
         }
 
+        /// <summary>
+        /// Get list of comments of the specified post.
+        /// </summary>
+        /// <param name="postId">The post ID.</param>
+        /// <param name="limit">The amount of comments to return.</param>
+        /// <param name="previousCommentCursor">The cursor to the previous comment.</param>
+        /// <returns>
+        /// A list of comments, which belong to the post with ID specified in <paramref name="postId" />,
+        /// that contains maximum <paramref name="limit" /> comments, that were created before the comment,
+        /// whose <paramref name="previousCommentCursor" /> was specified.
+        /// </returns>
         [HttpGet("posts/{postId:required}/[controller]")]
         public async Task<ICollection<ApiModels.Comment>> GetAsync(Guid postId, int? limit, long? previousCommentCursor)
         {

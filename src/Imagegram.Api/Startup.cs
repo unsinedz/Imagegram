@@ -1,7 +1,6 @@
 using Imagegram.Api.Authentication;
 using Imagegram.Api.Extensions;
 using Imagegram.Api.Mvc.ExceptionFilters;
-using Imagegram.Api.Mvc.ResultFilters;
 using Imagegram.Api.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -24,10 +23,10 @@ namespace Imagegram.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddResponseCompression();
             services.AddControllers(config =>
             {
-                config.Filters.Add(new StatusCodeExceptionActionFilter());
-                config.Filters.Add(new ShortenedProblemDetailsResultFilter());
+                config.Filters.Add(new StatusCodeExceptionFilter());
             }).AddNewtonsoftJson();
 
             services.Configure<ConnectionStringOptions>(Configuration.GetSection("ConnectionStrings"));
@@ -35,6 +34,7 @@ namespace Imagegram.Api
             services.Configure<PostOptions>(Configuration.GetSection("Posts"));
 
             services.AddAutoMapper();
+            services.AddSwagger();
 
             services.AddTransient<IDbConnectionFactory, MsSqlConnectionFactory>();
             services.AddTransient<ICurrentUtcDateProvider, CurrentUtcDateProvider>();
@@ -45,7 +45,7 @@ namespace Imagegram.Api
             services.AddTransient<IPostService, PostService>();
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<IFileService, FileService>();
-            
+
             services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddTransient<IPostRepository, PostRepository>();
             services.AddTransient<ICommentRepository, CommentRepository>();
@@ -57,13 +57,18 @@ namespace Imagegram.Api
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
-
-            app.UseHttpsRedirection();
+            else
+                app.UseHttpsRedirection();
 
             app.UseStaticFiles();
+            app.UseResponseCompression();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(x =>
+            {
+                x.SwaggerEndpoint($"/swagger/{Constants.Api.Version}/swagger.json", $"{Constants.Api.Name} {Constants.Api.Version}");
+            });
 
             app.UseRouting();
 

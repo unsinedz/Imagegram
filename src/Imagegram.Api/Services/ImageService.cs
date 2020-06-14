@@ -29,9 +29,6 @@ namespace Imagegram.Api.Services
                 FileExtension = Path.GetExtension(input.FileName)
             };
 
-            ValidateExtension(imageDescriptor.FileExtension);
-            ValidateFileSize(input.Length);
-
             using (var stream = new MemoryStream())
             {
                 await input.CopyToAsync(stream);
@@ -39,19 +36,6 @@ namespace Imagegram.Api.Services
             }
 
             return imageDescriptor;
-        }
-
-        private void ValidateExtension(string extension)
-        {
-            if (!supportedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
-                throw new ArgumentException("File format is not supported.");
-        }
-
-        private void ValidateFileSize(long bytesCount)
-        {
-            var kbSize = bytesCount / (1 << 10);
-            if (kbSize > maxFileSizeKb)
-                throw new ArgumentException("File size is too large.");
         }
     }
 }
