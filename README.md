@@ -29,6 +29,16 @@ Business logic services are located in the *Imagegram.Api.Services* namespace.
 Entity persistence is implemented using the *Repository* pattern and lightweight *Dapper* ORM. Queries were placed directly at the repositories for simplicity (it is only a test task, not an enterprise project).
 In order to separate business logic layers *Controllers* use *Services* for the entity operations, not *Repositories* directly.
 *File storage* and *Post* options can be configured via application settings.
+The following design considerations were taken into account, but not implemented for simplicity reasons:
+- type column definition provider for the SQL queries;
+- SQL indices for the `[ItemCursor]` columns.
+
+##Performance
+
+The system was designed and tested to satisfy the following requirements:
+
+- maximum repsonse time for any API call except file uploads: **50ms**;
+- minimum throughput: **100 RPS**.
 
 ##License
 
