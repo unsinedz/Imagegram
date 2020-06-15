@@ -16,6 +16,6 @@ namespace Imagegram.Api.Models.Projection
 
         public ICollection<ProjectionModels.Comment> Comments { get; set; }
 
-        public long VersionCursor { get; set; }
+        public long ItemCursor { get; set; }
     }
 }

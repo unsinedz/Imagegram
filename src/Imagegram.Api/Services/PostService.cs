@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Imagegram.Api.Extensions;
+using Imagegram.Api.Repositories;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using EntityModels = Imagegram.Api.Models.Entity;

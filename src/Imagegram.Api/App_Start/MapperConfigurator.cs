@@ -28,12 +28,12 @@ namespace Imagegram.Api
                     x => x.MapFrom((source, dest, _, context)
                         => source.Comments?.Select(x => context.Mapper.Map<ApiModels.Comment>(x)).ToList()
                             ?? new List<ApiModels.Comment>(0)))
-                .ForMember(x => x.Cursor, x => x.MapFrom(source => source.VersionCursor));
+                .ForMember(x => x.Cursor, x => x.MapFrom(source => source.ItemCursor));
 
             config.CreateMap<ApiModels.CommentInput, EntityModels.Comment>();
             config.CreateMap<EntityModels.Comment, ProjectionModels.Comment>();
             config.CreateMap<ProjectionModels.Comment, ApiModels.Comment>()
-                .ForMember(x => x.Cursor, x => x.MapFrom(source => source.VersionCursor));
+                .ForMember(x => x.Cursor, x => x.MapFrom(source => source.ItemCursor));
 
             SqlMapper.AddTypeHandler(typeof(long), new Int64Handler());
         }

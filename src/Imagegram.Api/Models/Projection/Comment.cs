@@ -13,6 +13,6 @@ namespace Imagegram.Api.Models.Projection
 
         public DateTime CreatedAt { get; set; }
 
-        public long VersionCursor { get; set; }
+        public long ItemCursor { get; set; }
     }
 }

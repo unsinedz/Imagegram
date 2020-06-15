@@ -1,6 +1,7 @@
 using Imagegram.Api.Authentication;
 using Imagegram.Api.Extensions;
 using Imagegram.Api.Mvc.ExceptionFilters;
+using Imagegram.Api.Repositories;
 using Imagegram.Api.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;

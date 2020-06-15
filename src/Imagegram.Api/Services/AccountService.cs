@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Imagegram.Api.Exceptions;
+using Imagegram.Api.Repositories;
 using EntityModels = Imagegram.Api.Models.Entity;
 using ProjectionModels = Imagegram.Api.Models.Projection;
 
@@ -27,12 +28,17 @@ namespace Imagegram.Api.Services
 
         public async Task<ProjectionModels.Account> DeleteAsync(Guid id)
         {
-            var account = (await accountRepository.GetAsync(id)).SingleOrDefault();
+            var account = await accountRepository.GetAsync(id);
             if (account == null)
                 throw new NotFoundException("Account was not found.");
 
             await accountRepository.DeleteAsync(id);
             return mapper.Map<ProjectionModels.Account>(account);
+        }
+
+        public async Task<ProjectionModels.Account> GetAsync(Guid id)
+        {
+            return await accountRepository.GetAsync(id);
         }
     }
 }

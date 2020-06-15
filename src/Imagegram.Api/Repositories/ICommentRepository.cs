@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using EntityModels = Imagegram.Api.Models.Entity;
 using ProjectionModels = Imagegram.Api.Models.Projection;
 
-namespace Imagegram.Api.Services
+namespace Imagegram.Api.Repositories
 {
     public interface ICommentRepository
     {

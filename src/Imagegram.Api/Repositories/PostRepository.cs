@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Dapper;
 using Dapper.Contrib.Extensions;
+using Imagegram.Api.Services;
 using Microsoft.Extensions.Options;
 using EntityModels = Imagegram.Api.Models.Entity;
 using ProjectionModels = Imagegram.Api.Models.Projection;
 
-namespace Imagegram.Api.Services
+namespace Imagegram.Api.Repositories
 {
     public class PostRepository : RepositoryBase, IPostRepository
     {

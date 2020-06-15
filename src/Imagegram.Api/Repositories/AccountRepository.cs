@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Dapper.Contrib.Extensions;
+using Imagegram.Api.Services;
 using Microsoft.Extensions.Options;
 using EntityModels = Imagegram.Api.Models.Entity;
+using ProjectionModels = Imagegram.Api.Models.Projection;
 
-namespace Imagegram.Api.Services
+namespace Imagegram.Api.Repositories
 {
     public class AccountRepository : RepositoryBase, IAccountRepository
     {
@@ -15,7 +18,7 @@ namespace Imagegram.Api.Services
         {
         }
 
-        public async Task<EntityModels.Account> CreateAsync(EntityModels.Account account)
+        public async Task<Guid> CreateAsync(EntityModels.Account account)
         {
             if (account is null)
                 throw new ArgumentNullException(nameof(account));
@@ -25,18 +28,19 @@ namespace Imagegram.Api.Services
             using (var connection = OpenConnection())
             {
                 await connection.InsertAsync(account);
-                return account;
+                return account.Id;
             }
         }
 
-        public async Task<ICollection<EntityModels.Account>> GetAsync(params Guid[] ids)
+        public async Task<ProjectionModels.Account> GetAsync(params Guid[] ids)
         {
             using (var connection = OpenConnection())
             {
-                var accounts = await connection.QueryAsync<EntityModels.Account>(
-                    "select * from [dbo].[Accounts] where [Id] in @ids",
+                var accounts = await connection.QueryAsync<ProjectionModels.Account>(
+                    @"select * from [dbo].[Accounts]
+                    where [Id] in @ids",
                     new { ids });
-                return accounts.AsList();
+                return accounts.SingleOrDefault();
             }
         }
 
@@ -44,7 +48,10 @@ namespace Imagegram.Api.Services
         {
             using (var connection = OpenConnection())
             {
-                await connection.ExecuteAsync("delete from [dbo].[Accounts] where [Id] = @id", new { id });
+                await connection.ExecuteAsync(
+                    @"delete from [dbo].[Accounts]
+                    where [Id] = @id",
+                    new { id });
             }
         }
     }

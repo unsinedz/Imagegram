@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Imagegram.Api.Exceptions;
+using Imagegram.Api.Repositories;
 using EntityModels = Imagegram.Api.Models.Entity;
 using ProjectionModels = Imagegram.Api.Models.Projection;
 
