@@ -33,8 +33,6 @@ create type [dbo].[udtIds] as Table(Id uniqueidentifier not null);
 
 go
 
-go
-
 create procedure [dbo].[spSelectLastPostComments]
     @commentLimit int,
 	@postIds [dbo].[udtIds] readonly

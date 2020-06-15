@@ -67,13 +67,7 @@ namespace Imagegram.Api.Services
                 throw;
             }
 
-            var postTask = postRepository.GetAsync(createdId);
-            var accountsTask = accountRepository.GetAsync(post.CreatorId);
-            await Task.WhenAll(postTask, accountsTask);
-
-            var postProjection = mapper.Map<ProjectionModels.Post>(postTask.Result);
-            postProjection.Creator = mapper.Map<ProjectionModels.Account>(accountsTask.Result.Single());
-            return postProjection;
+            return await postRepository.GetAsync(createdId);
         }
 
         public async Task<ICollection<ProjectionModels.Post>> GetAsync(int? limit, long? previousPostCursor)
