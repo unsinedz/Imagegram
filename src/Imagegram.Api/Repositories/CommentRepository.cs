@@ -57,9 +57,12 @@ namespace Imagegram.Api.Repositories
             using (var connection = OpenConnection())
             {
                 var comments = await connection.QueryAsync<EntityModels.Comment, EntityModels.Account, ProjectionModels.Comment>(
-                    @"select c.*
-                    ,a.[Id]
-                    ,a.[Name]
+                    @"select c.[Id]
+                        ,c.[Content]
+                        ,c.[CreatedAt]
+                        ,c.[ItemCursor]
+                        ,a.[Id]
+                        ,a.[Name]
                     from [dbo].[Comments] c
                     inner join [dbo].[Accounts] a on a.[Id] = c.[CreatorId]
                     where c.[Id] = @id",
@@ -81,9 +84,12 @@ namespace Imagegram.Api.Repositories
                     ? $" and [{nameof(EntityModels.Comment.ItemCursor)}] > @previousCommentCursor"
                     : "";
                 var comments = await connection.QueryAsync<EntityModels.Comment, EntityModels.Account, ProjectionModels.Comment>(
-                    $@"select{limitExpression} c.*
-                    ,a.Id
-                    ,a.Name
+                    $@"select{limitExpression} c.[Id]
+                        ,c.[Content]
+                        ,c.[CreatedAt]
+                        ,c.[ItemCursor]
+                        ,a.Id
+                        ,a.Name
                     from [dbo].[Comments] c
                     inner join [dbo].[Accounts] a on a.[Id] = c.[CreatorId]
                     where [{nameof(EntityModels.Comment.PostId)}] = @postId{cursorExpression}

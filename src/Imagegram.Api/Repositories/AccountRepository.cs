@@ -37,7 +37,9 @@ namespace Imagegram.Api.Repositories
             using (var connection = OpenConnection())
             {
                 var accounts = await connection.QueryAsync<ProjectionModels.Account>(
-                    @"select * from [dbo].[Accounts]
+                    @"select [Id]
+                        ,[Name]
+                    from [dbo].[Accounts]
                     where [Id] in @ids",
                     new { ids });
                 return accounts.SingleOrDefault();

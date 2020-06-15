@@ -49,9 +49,12 @@ namespace Imagegram.Api.Repositories
             using (var connection = OpenConnection())
             {
                 var posts = await connection.QueryAsync<EntityModels.Post, EntityModels.Account, ProjectionModels.Post>(
-                    @"select p.*
-                    ,a.[Id]
-                    ,a.[Name]
+                    @"select p.[Id]
+                        ,p.[ImageUrl]
+                        ,p.[CreatedAt]
+                        ,p.[ItemCursor]
+                        ,a.[Id]
+                        ,a.[Name]
                     from [dbo].[Posts] p
                     inner join [dbo].[Accounts] a on a.[Id] = p.[CreatorId]
                     where p.[Id] = @id",
@@ -75,50 +78,51 @@ namespace Imagegram.Api.Repositories
                         ? $"where [{nameof(EntityModels.Post.ItemCursor)}] > @previousPostCursor"
                         : "";
                     var posts = await connection.QueryAsync<EntityModels.Post, EntityModels.Account, EntityModels.Comment, EntityModels.Account, ProjectionModels.Post>(
-                        $@"select{limitExpression} p.*
-                        ,a.[Id] as [PostCreatorId]
-                        ,a.[Name] as [PostCreatorName]
-                    into #LatestPostsWithCreators
-                    from [dbo].[Posts] p
-                    inner join [dbo].[Accounts] a on a.[Id] = p.[CreatorId]
-		            {cursorExpression}
-		            order by [CommentsCount] desc, [CreatedAt] desc;
-
-                    select [Id]
-                        ,[ImageUrl]
-                        ,[CreatorId]
-                        ,[CreatedAt]
-                        ,[ItemCursor]
-                        ,[PostCreatorId] as [Id]
-                        ,[PostCreatorName] as [Name]
-                        ,[CommentId] as [Id]
-                    	,[CommentContent] as [Content]
-                    	,[CommentCreatedAt] as [CreatedAt]
-	                	,[CommentItemCursor] as [ItemCursor]
-                    	,[CommentCreatorId] as [Id]
-                    	,[CommentCreatorName] as [Name]
-                    from (
-                        select p.[Id]
+                        $@"select{limitExpression} p.[Id]
                             ,p.[ImageUrl]
-                            ,p.[CreatorId]
                             ,p.[CreatedAt]
                             ,p.[ItemCursor]
-                            ,p.[PostCreatorId]
-                            ,p.[PostCreatorName]
-                            ,c.[Id] as [CommentId]
-                    		,c.[Content] as [CommentContent]
-                    		,c.[CreatedAt] as [CommentCreatedAt]
-	                		,c.[ItemCursor] as [CommentItemCursor]
-                    		,row_number() over (partition by p.[Id] order by c.[CreatedAt] desc) as [CommentRank]
-                            ,a.[Id] as [CommentCreatorId]
-                            ,a.[Name] as [CommentCreatorName]
-                    	from #LatestPostsWithCreators p
-                    	inner join [dbo].[Comments] c on p.[Id] = c.[PostId]
-                        inner join [dbo].[Accounts] a on a.[Id] = c.[CreatorId]
-                    ) as RankedComments
-                    where [CommentRank] <= @perPostCommentLimit;
-                    
-                    truncate table #LatestPostsWithCreators;",
+                            ,a.[Id] as [PostCreatorId]
+                            ,a.[Name] as [PostCreatorName]
+                        into #LatestPostsWithCreators
+                        from [dbo].[Posts] p
+                        inner join [dbo].[Accounts] a on a.[Id] = p.[CreatorId]
+		                {cursorExpression}
+		                order by [CommentsCount] desc, [CreatedAt] desc;
+
+                        select [Id]
+                            ,[ImageUrl]
+                            ,[CreatedAt]
+                            ,[ItemCursor]
+                            ,[PostCreatorId] as [Id]
+                            ,[PostCreatorName] as [Name]
+                            ,[CommentId] as [Id]
+                        	,[CommentContent] as [Content]
+                        	,[CommentCreatedAt] as [CreatedAt]
+	                    	,[CommentItemCursor] as [ItemCursor]
+                        	,[CommentCreatorId] as [Id]
+                        	,[CommentCreatorName] as [Name]
+                        from (
+                            select p.[Id]
+                                ,p.[ImageUrl]
+                                ,p.[CreatedAt]
+                                ,p.[ItemCursor]
+                                ,p.[PostCreatorId]
+                                ,p.[PostCreatorName]
+                                ,c.[Id] as [CommentId]
+                        		,c.[Content] as [CommentContent]
+                        		,c.[CreatedAt] as [CommentCreatedAt]
+	                    		,c.[ItemCursor] as [CommentItemCursor]
+                        		,row_number() over (partition by p.[Id] order by c.[CreatedAt] desc) as [CommentRank]
+                                ,a.[Id] as [CommentCreatorId]
+                                ,a.[Name] as [CommentCreatorName]
+                        	from #LatestPostsWithCreators p
+                        	inner join [dbo].[Comments] c on p.[Id] = c.[PostId]
+                            inner join [dbo].[Accounts] a on a.[Id] = c.[CreatorId]
+                        ) as RankedComments
+                        where [CommentRank] <= @perPostCommentLimit;
+
+                        truncate table #LatestPostsWithCreators;",
                         (post, postCreator, comment, commentCreator) =>
                         {
                             var postProjection = MapEntitiesIntoProjection(post, postCreator);
