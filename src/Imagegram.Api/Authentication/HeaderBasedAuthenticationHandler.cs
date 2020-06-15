@@ -18,10 +18,10 @@ namespace Imagegram.Api.Authentication
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
-            IAccountService accountRepository,
+            IAccountService accountService,
             ISystemClock clock) : base(options, logger, encoder, clock)
         {
-            this.accountService = accountRepository;
+            this.accountService = accountService;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
