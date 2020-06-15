@@ -15,8 +15,6 @@ namespace Imagegram.Api.Models.Entity
 
         public DateTime CreatedAt { get; set; }
 
-        public int CommentsCount { get; set; }
-
         [Write(false)]
         public long ItemCursor { get; set; }
     }
