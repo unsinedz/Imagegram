@@ -49,10 +49,17 @@ namespace Imagegram.Api.Services
         {
             using (var connection = OpenConnection())
             {
+                var limitExpression = limit.HasValue && limit.Value > 0
+                    ? $" top (@limit)"
+                    : "";
+                var cursorExpression = previousPostCursor.HasValue
+                    ? $"where [{nameof(EntityModels.Post.VersionCursor)}] > @previousPostCursor"
+                    : "";
                 var posts = await connection.QueryAsync<EntityModels.Post>(
-                    "[dbo].[spSelectLatestPosts]",
-                    new { limit, previousPostCursor },
-                    commandType: CommandType.StoredProcedure);
+                    $@"select{limitExpression} * from [dbo].[Posts]
+		            {cursorExpression}
+		            order by [CommentsCount] desc, [CreatedAt] desc",
+                    new { limit, previousPostCursor });
                 return posts.AsList();
             }
         }

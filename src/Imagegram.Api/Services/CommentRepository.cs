@@ -29,7 +29,18 @@ namespace Imagegram.Api.Services
             comment.CreatedAt = currentUtcDateProvider.UtcNow;
             using (var connection = OpenConnection())
             {
-                await connection.InsertAsync(comment);
+                using (var transaction = connection.BeginTransaction())
+                {
+                    await connection.InsertAsync(comment, transaction);
+                    await connection.ExecuteAsync(@"
+                        update [dbo].[Posts]
+                        set [CommentsCount] = [CommentsCount] + 1
+                        where [Id] = @postId",
+                        new { postId = comment.PostId },
+                        transaction);
+                    transaction.Commit();
+                }
+
                 return comment.Id;
             }
         }
