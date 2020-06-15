@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -51,9 +51,9 @@ namespace Imagegram.Api.Repositories
             using (var connection = OpenConnection())
             {
                 await connection.ExecuteAsync(
-                    @"delete from [dbo].[Accounts]
-                    where [Id] = @id",
-                    new { id });
+                    "[dbo].[spDeleteAccount]",
+                    new { accountId = id },
+                    commandType: CommandType.StoredProcedure);
             }
         }
     }
