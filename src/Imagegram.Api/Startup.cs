@@ -1,45 +1,79 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Imagegram.Api.Authentication;
+using Imagegram.Api.Extensions;
+using Imagegram.Api.Mvc.ExceptionFilters;
+using Imagegram.Api.Repositories;
+using Imagegram.Api.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace Imagegram.Api
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(config =>
+            {
+                config.Filters.Add(new StatusCodeExceptionFilter());
+            }).AddNewtonsoftJson();
+
+            services.Configure<ConnectionStringOptions>(Configuration.GetSection("ConnectionStrings"));
+            services.Configure<FileStorageOptions>(Configuration.GetSection("FileStorage"));
+            services.Configure<PostOptions>(Configuration.GetSection("Posts"));
+
+            services.AddAutoMapper();
+            services.AddSwagger();
+
+            services.AddTransient<IDbConnectionFactory, MsSqlConnectionFactory>();
+            services.AddTransient<ICurrentUtcDateProvider, CurrentUtcDateProvider>();
+
+            services.AddTransient<IImageConverter, ImageConverter>();
+            services.AddTransient<IImageService, ImageService>();
+            services.AddTransient<IAccountService, AccountService>();
+            services.AddTransient<IPostService, PostService>();
+            services.AddTransient<ICommentService, CommentService>();
+            services.AddTransient<IFileService, FileService>();
+
+            services.AddTransient<IAccountRepository, AccountRepository>();
+            services.AddTransient<IPostRepository, PostRepository>();
+            services.AddTransient<ICommentRepository, CommentRepository>();
+
+            var authenticationSchemeName = Constants.Authentication.HeaderBasedSchemeName;
+            services.AddAuthentication(authenticationSchemeName)
+                .AddScheme<AuthenticationSchemeOptions, HeaderBasedAuthenticationHandler>(
+                    authenticationSchemeName,
+                    configureOptions: null);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
+            else
+                app.UseHttpsRedirection();
 
-            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(x =>
+            {
+                x.SwaggerEndpoint($"/swagger/{Constants.Api.Version}/swagger.json", $"{Constants.Api.Name} {Constants.Api.Version}");
+            });
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
