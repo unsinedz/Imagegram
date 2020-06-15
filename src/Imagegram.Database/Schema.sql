@@ -12,7 +12,8 @@ create table [dbo].[Posts] (
     [ItemCursor] rowversion not null,
 	[CommentsCount] int not null default 0,
     primary key ([Id]),
-    foreign key ([CreatorId]) references [dbo].[Accounts]([Id]) on delete cascade
+    foreign key ([CreatorId]) references [dbo].[Accounts]([Id]) on delete cascade,
+	index [IX_Posts_CreatorId] nonclustered ([CreatorId]),
 );
 
 create table [dbo].[Comments] (
@@ -24,36 +25,6 @@ create table [dbo].[Comments] (
     [ItemCursor] rowversion not null,
     primary key ([Id]),
     foreign key ([CreatorId]) references [dbo].[Accounts]([Id]) on delete cascade,
-	index [IX_Comments_PostId nonclustered] ([PostId])
+	index [IX_Comments_PostId] nonclustered ([PostId]),
+    index [IX_Comments_CreatorId] nonclustered ([CreatorId])
 );
-
-go
-
-create type [dbo].[udtIds] as Table(Id uniqueidentifier not null);
-
-go
-
-create procedure [dbo].[spSelectLastPostComments]
-    @commentLimit int,
-	@postIds [dbo].[udtIds] readonly
-as
-begin
-    select [PostId]
-    	,[Id]
-    	,[Content]
-        ,[CreatorId]
-    	,[CreatedAt]
-		,[ItemCursor]
-    from (
-    	select p.[Id] as [PostId]
-    		,c.[Id] as [Id]
-    		,c.[Content] as [Content]
-    	    ,c.[CreatorId] as [CreatorId]
-    		,c.[CreatedAt] as [CreatedAt]
-			,c.[ItemCursor]
-    		,row_number() over (partition by p.[Id] order by c.[CreatedAt] desc) as [CommentRank]
-    	from @postIds p
-    	inner join [dbo].[Comments] c on p.[Id] = c.[PostId]
-    	) ranks
-    where [CommentRank] <= @commentLimit
-end;
