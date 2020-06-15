@@ -72,31 +72,7 @@ namespace Imagegram.Api.Services
 
         public async Task<ICollection<ProjectionModels.Post>> GetAsync(int? limit, long? previousPostCursor)
         {
-            var posts = await postRepository.GetLatestAsync(limit, previousPostCursor);
-            var comments = await commentRepository.GetLatestForPostsAsync(
-                posts.Select(x => x.Id).Distinct().ToList(),
-                postOptions.CurrentValue.FetchCommentsLimit);
-
-            var postCreatorIds = posts.Select(x => x.CreatorId);
-            var commentCreatorIds = comments.Select(x => x.CreatorId);
-
-            var commentsByPost = comments.GroupBy(x => x.PostId).ToDictionary(x => x.Key);
-            var accounts = (await accountRepository.GetAsync(postCreatorIds
-                .Concat(commentCreatorIds)
-                .Distinct()
-                .ToArray())).ToDictionary(x => x.Id);
-            return posts.Select(x =>
-            {
-                var post = mapper.Map<ProjectionModels.Post>(x);
-                post.Creator = mapper.Map<ProjectionModels.Account>(accounts[x.CreatorId]);
-                post.Comments = commentsByPost.GetValueOrDefault(x.Id)?.Select(c =>
-                {
-                    var comment = mapper.Map<ProjectionModels.Comment>(c);
-                    comment.Creator = mapper.Map<ProjectionModels.Account>(accounts[c.CreatorId]);
-                    return comment;
-                }).ToList();
-                return post;
-            }).ToList();
+            return await postRepository.GetLatestAsync(limit, previousPostCursor);
         }
 
         private string GenerateRandomImageName(string desiredExtension)

@@ -2,6 +2,6 @@ namespace Imagegram.Api.Models.Entity
 {
     public interface ICursoredModel
     {
-        long VersionCursor { get; set; }
+        long ItemCursor { get; set; }
     }
 }

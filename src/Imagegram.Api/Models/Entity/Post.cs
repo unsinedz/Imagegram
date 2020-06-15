@@ -18,6 +18,6 @@ namespace Imagegram.Api.Models.Entity
         public int CommentsCount { get; set; }
 
         [Write(false)]
-        public long VersionCursor { get; set; }
+        public long ItemCursor { get; set; }
     }
 }

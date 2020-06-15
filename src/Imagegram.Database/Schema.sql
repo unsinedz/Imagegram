@@ -9,7 +9,7 @@ create table [dbo].[Posts] (
     [ImageUrl] varchar(100) not null,
     [CreatorId] uniqueidentifier not null,
     [CreatedAt] datetime2 not null,
-    [VersionCursor] rowversion not null,
+    [ItemCursor] rowversion not null,
 	[CommentsCount] int not null default 0,
     primary key ([Id]),
     foreign key ([CreatorId]) references [dbo].[Accounts]([Id]) on delete cascade
@@ -21,7 +21,7 @@ create table [dbo].[Comments] (
     [PostId] uniqueidentifier not null,
     [CreatorId] uniqueidentifier not null,
     [CreatedAt] datetime2 not null,
-    [VersionCursor] rowversion not null,
+    [ItemCursor] rowversion not null,
     primary key ([Id]),
     foreign key ([CreatorId]) references [dbo].[Accounts]([Id]) on delete cascade,
 	index [IX_Comments_PostId nonclustered] ([PostId])
@@ -43,14 +43,14 @@ begin
     	,[Content]
         ,[CreatorId]
     	,[CreatedAt]
-		,[VersionCursor]
+		,[ItemCursor]
     from (
     	select p.[Id] as [PostId]
     		,c.[Id] as [Id]
     		,c.[Content] as [Content]
     	    ,c.[CreatorId] as [CreatorId]
     		,c.[CreatedAt] as [CreatedAt]
-			,c.[VersionCursor]
+			,c.[ItemCursor]
     		,row_number() over (partition by p.[Id] order by c.[CreatedAt] desc) as [CommentRank]
     	from @postIds p
     	inner join [dbo].[Comments] c on p.[Id] = c.[PostId]

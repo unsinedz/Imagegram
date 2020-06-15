@@ -10,6 +10,6 @@ namespace Imagegram.Api.Services
     {
         Task<Guid> CreateAsync(EntityModels.Post post);
         Task<ProjectionModels.Post> GetAsync(Guid id);
-        Task<ICollection<EntityModels.Post>> GetLatestAsync(int? limit, long? previousPostCursor);
+        Task<ICollection<ProjectionModels.Post>> GetLatestAsync(int? limit, long? previousPostCursor);
     }
 }

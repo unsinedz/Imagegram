@@ -77,7 +77,7 @@ namespace Imagegram.Api.Services
                     ? $" top ({limit.Value})"
                     : "";
                 var cursorExpression = previousCommentCursor.HasValue
-                    ? $" and [{nameof(EntityModels.Comment.VersionCursor)}] > @previousCommentCursor"
+                    ? $" and [{nameof(EntityModels.Comment.ItemCursor)}] > @previousCommentCursor"
                     : "";
                 var comments = await connection.QueryAsync<EntityModels.Comment, EntityModels.Account, ProjectionModels.Comment>(
                     $@"select{limitExpression} c.*

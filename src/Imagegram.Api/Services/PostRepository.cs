@@ -61,28 +61,95 @@ namespace Imagegram.Api.Services
             }
         }
 
-        public async Task<ICollection<EntityModels.Post>> GetLatestAsync(int? limit, long? previousPostCursor)
+        public async Task<ICollection<ProjectionModels.Post>> GetLatestAsync(int? limit, long? previousPostCursor)
         {
             using (var connection = OpenConnection())
             {
-                var limitExpression = limit.HasValue && limit.Value > 0
-                    ? $" top (@limit)"
-                    : "";
-                var cursorExpression = previousPostCursor.HasValue
-                    ? $"where [{nameof(EntityModels.Post.VersionCursor)}] > @previousPostCursor"
-                    : "";
-                var posts = await connection.QueryAsync<EntityModels.Post>(
-                    $@"select{limitExpression} * from [dbo].[Posts]
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var limitExpression = limit.HasValue && limit.Value > 0
+                        ? $" top (@limit)"
+                        : "";
+                    var cursorExpression = previousPostCursor.HasValue
+                        ? $"where [{nameof(EntityModels.Post.ItemCursor)}] > @previousPostCursor"
+                        : "";
+                    var posts = await connection.QueryAsync<EntityModels.Post, EntityModels.Account, EntityModels.Comment, EntityModels.Account, ProjectionModels.Post>(
+                        $@"select{limitExpression} p.*
+                        ,a.[Id] as [PostCreatorId]
+                        ,a.[Name] as [PostCreatorName]
+                    into #LatestPostsWithCreators
+                    from [dbo].[Posts] p
+                    inner join [dbo].[Accounts] a on a.[Id] = p.[CreatorId]
 		            {cursorExpression}
-		            order by [CommentsCount] desc, [CreatedAt] desc",
-                    new { limit, previousPostCursor });
-                return posts.AsList();
+		            order by [CommentsCount] desc, [CreatedAt] desc;
+
+                    select [Id]
+                        ,[ImageUrl]
+                        ,[CreatorId]
+                        ,[CreatedAt]
+                        ,[ItemCursor]
+                        ,[PostCreatorId] as [Id]
+                        ,[PostCreatorName] as [Name]
+                        ,[CommentId] as [Id]
+                    	,[CommentContent] as [Content]
+                    	,[CommentCreatedAt] as [CreatedAt]
+	                	,[CommentItemCursor] as [ItemCursor]
+                    	,[CommentCreatorId] as [Id]
+                    	,[CommentCreatorName] as [Name]
+                    from (
+                        select p.[Id]
+                            ,p.[ImageUrl]
+                            ,p.[CreatorId]
+                            ,p.[CreatedAt]
+                            ,p.[ItemCursor]
+                            ,p.[PostCreatorId]
+                            ,p.[PostCreatorName]
+                            ,c.[Id] as [CommentId]
+                    		,c.[Content] as [CommentContent]
+                    		,c.[CreatedAt] as [CommentCreatedAt]
+	                		,c.[ItemCursor] as [CommentItemCursor]
+                    		,row_number() over (partition by p.[Id] order by c.[CreatedAt] desc) as [CommentRank]
+                            ,a.[Id] as [CommentCreatorId]
+                            ,a.[Name] as [CommentCreatorName]
+                    	from #LatestPostsWithCreators p
+                    	inner join [dbo].[Comments] c on p.[Id] = c.[PostId]
+                        inner join [dbo].[Accounts] a on a.[Id] = c.[CreatorId]
+                    ) as RankedComments
+                    where [CommentRank] <= @perPostCommentLimit;
+                    
+                    truncate table #LatestPostsWithCreators;",
+                        (post, postCreator, comment, commentCreator) =>
+                        {
+                            var postProjection = MapEntitiesIntoProjection(post, postCreator);
+                            postProjection.Comments = new List<ProjectionModels.Comment>
+                            {
+                            MapEntitiesIntoProjection(comment, commentCreator)
+                            };
+                            return postProjection;
+                        },
+                        new { limit, previousPostCursor, perPostCommentLimit = 3 },
+                        transaction);
+                    return posts.GroupBy(x => x.Id)
+                        .Select(x => x.Aggregate((acc, current) =>
+                        {
+                            acc.Comments.Add(current.Comments.Single());
+                            return acc;
+                        }))
+                        .AsList();
+                }
             }
         }
 
         private ProjectionModels.Post MapEntitiesIntoProjection(EntityModels.Post post, EntityModels.Account account)
         {
             var projection = mapper.Map<ProjectionModels.Post>(post);
+            projection.Creator = mapper.Map<ProjectionModels.Account>(account);
+            return projection;
+        }
+
+        private ProjectionModels.Comment MapEntitiesIntoProjection(EntityModels.Comment comment, EntityModels.Account account)
+        {
+            var projection = mapper.Map<ProjectionModels.Comment>(comment);
             projection.Creator = mapper.Map<ProjectionModels.Account>(account);
             return projection;
         }
