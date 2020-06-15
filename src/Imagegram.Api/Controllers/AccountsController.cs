@@ -15,8 +15,6 @@ namespace Imagegram.Api.Controllers
     [Route("[controller]")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Authorize]
     public class AccountsController : ControllerBase
     {
@@ -47,6 +45,7 @@ namespace Imagegram.Api.Controllers
         /// </summary>
         /// <returns>An instance of deleted account.</returns>
         [HttpDelete("me")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ApiModels.Account> DeleteAsync()
         {
             var accountId = User.GetId();
