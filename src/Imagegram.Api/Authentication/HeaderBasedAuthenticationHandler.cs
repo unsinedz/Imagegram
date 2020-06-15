@@ -26,7 +26,7 @@ namespace Imagegram.Api.Authentication
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            var headerName = Constants.Authorization.HeaderName;
+            var headerName = Constants.Authentication.HeaderName;
             if (!Request.Headers.TryGetValue(headerName, out var accountIdValue))
                 return AuthenticateResult.Fail($"Missing {headerName} header.");
 

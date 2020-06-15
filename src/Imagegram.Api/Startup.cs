@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using AuthenticationSchemes = Imagegram.Api.Authentication.Schemes;
 
 namespace Imagegram.Api
 {
@@ -50,8 +49,11 @@ namespace Imagegram.Api
             services.AddTransient<IPostRepository, PostRepository>();
             services.AddTransient<ICommentRepository, CommentRepository>();
 
-            services.AddAuthentication(AuthenticationSchemes.HeaderBased)
-                .AddScheme<AuthenticationSchemeOptions, HeaderBasedAuthenticationHandler>(AuthenticationSchemes.HeaderBased, configureOptions: null);
+            var authenticationSchemeName = Constants.Authentication.HeaderBasedSchemeName;
+            services.AddAuthentication(authenticationSchemeName)
+                .AddScheme<AuthenticationSchemeOptions, HeaderBasedAuthenticationHandler>(
+                    authenticationSchemeName,
+                    configureOptions: null);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

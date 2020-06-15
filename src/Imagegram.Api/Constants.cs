@@ -8,10 +8,11 @@ namespace Imagegram.Api
             public const string Version = "v1";
         }
 
-        public static class Authorization
+        public static class Authentication
         {
             public const string HeaderName = "X-Account-Id";
-            public const string SecutirySchemeName = "apiKey";
+            public const string HeaderBasedSchemeName = "HeaderBased";
+            public const string SecuritySchemeName = "apiKey";
         }
     }
 }
