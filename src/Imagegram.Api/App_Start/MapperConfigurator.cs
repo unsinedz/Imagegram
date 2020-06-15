@@ -35,7 +35,7 @@ namespace Imagegram.Api
             config.CreateMap<ProjectionModels.Comment, ApiModels.Comment>()
                 .ForMember(x => x.Cursor, x => x.MapFrom(source => source.ItemCursor));
 
-            SqlMapper.AddTypeHandler(typeof(long), new Int64Handler());
+            SqlMapper.AddTypeHandler(typeof(long), new TimestampHandler());
         }
     }
 }
