@@ -82,13 +82,14 @@ namespace Imagegram.Api.Repositories
                             ,p.[ImageUrl]
                             ,p.[CreatedAt]
                             ,p.[ItemCursor]
+                            ,p.[CommentsCount]
                             ,a.[Id] as [PostCreatorId]
                             ,a.[Name] as [PostCreatorName]
                         into #LatestPostsWithCreators
                         from [dbo].[Posts] p
                         inner join [dbo].[Accounts] a on a.[Id] = p.[CreatorId]
 		                {cursorExpression}
-		                order by [CommentsCount] desc, [CreatedAt] desc;
+                        order by p.[CommentsCount] desc, p.[CreatedAt] desc;
 
                         select [Id]
                             ,[ImageUrl]
@@ -109,6 +110,7 @@ namespace Imagegram.Api.Repositories
                                 ,p.[ItemCursor]
                                 ,p.[PostCreatorId]
                                 ,p.[PostCreatorName]
+                                ,p.[CommentsCount]
                                 ,c.[Id] as [CommentId]
                         		,c.[Content] as [CommentContent]
                         		,c.[CreatedAt] as [CommentCreatedAt]
@@ -117,19 +119,20 @@ namespace Imagegram.Api.Repositories
                                 ,a.[Id] as [CommentCreatorId]
                                 ,a.[Name] as [CommentCreatorName]
                         	from #LatestPostsWithCreators p
-                        	inner join [dbo].[Comments] c on p.[Id] = c.[PostId]
-                            inner join [dbo].[Accounts] a on a.[Id] = c.[CreatorId]
-                        ) as RankedComments
-                        where [CommentRank] <= @perPostCommentLimit;
+                        	left join [dbo].[Comments] c on p.[Id] = c.[PostId]
+                            left join [dbo].[Accounts] a on a.[Id] = c.[CreatorId]
+                        ) as [PostsWithRankedComments]
+                        where [CommentRank] <= @perPostCommentLimit
+                        order by [PostsWithRankedComments].[CommentsCount] desc, [PostsWithRankedComments].[CreatedAt] desc;
 
                         truncate table #LatestPostsWithCreators;",
                         (post, postCreator, comment, commentCreator) =>
                         {
                             var postProjection = MapEntitiesIntoProjection(post, postCreator);
-                            postProjection.Comments = new List<ProjectionModels.Comment>
-                            {
-                            MapEntitiesIntoProjection(comment, commentCreator)
-                            };
+                            postProjection.Comments = new List<ProjectionModels.Comment>(1);
+                            if (comment != null) // query results may contain posts without comments
+                                postProjection.Comments.Add(MapEntitiesIntoProjection(comment, commentCreator));
+
                             return postProjection;
                         },
                         new { limit, previousPostCursor, perPostCommentLimit = 3 },
