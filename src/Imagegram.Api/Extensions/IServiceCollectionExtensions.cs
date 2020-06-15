@@ -30,7 +30,7 @@ namespace Imagegram.Api.Extensions
                 var headerName = Constants.Authentication.HeaderName;
                 x.AddSecurityDefinition(Constants.Authentication.SecuritySchemeName, new OpenApiSecurityScheme
                 {
-                    Description = $"{headerName} header that contains user ID. Example: \"{{00000000-0000-0000-0000-000000000000}}\"",
+                    Description = $"{headerName} header that contains user ID. Example: \"00000000-0000-0000-0000-000000000000\"",
                     In = ParameterLocation.Header,
                     Name = headerName,
                     Type = SecuritySchemeType.ApiKey

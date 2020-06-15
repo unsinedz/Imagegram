@@ -28,3 +28,31 @@ create table [dbo].[Comments] (
 	index [IX_Comments_PostId] nonclustered ([PostId]),
     index [IX_Comments_CreatorId] nonclustered ([CreatorId])
 );
+
+go;
+
+create procedure [dbo].[spDeleteAccount]
+    @accountId uniqueidentifier not null
+as
+begin
+    begin transaction DeleteAccount;
+
+    -- update Posts metadata
+    with [PostDecreaseCommentsCount] as (
+        select p.[Id] as [PostId], count(c.[Id]) as [CommentsCount]
+        from [dbo].[Posts] p
+        inner join [dbo].[Comments] c on p.[Id] = c.[PostId]
+        where c.[CreatorId] = @accountId and p.[CreatorId] <> @accountId
+        group by p.[Id]
+    )
+    update p
+    set [CommentsCount] = p.[CommentsCount] - pdcc.[CommentsCount]
+    from [dbo].[Posts] p
+    inner join [PostDecreaseCommentsCount] pdcc on p.[Id] = pdcc.[PostId];
+
+    -- delete account
+    delete from [dbo].[Accounts]
+    where [Id] = @accountId;
+
+    commit transaction DeleteAccount;
+end
