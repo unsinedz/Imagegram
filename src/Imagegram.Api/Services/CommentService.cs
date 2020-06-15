@@ -41,6 +41,7 @@ namespace Imagegram.Api.Services
 
         public async Task<ICollection<ProjectionModels.Comment>> GetByPostAsync(Guid postId, int? limit, long? previousCommentCursor)
         {
+            await ValidatePostIdAsync(postId);
             return await commentRepository.GetByPostAsync(postId, limit, previousCommentCursor);
         }
 
