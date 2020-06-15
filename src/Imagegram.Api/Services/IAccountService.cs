@@ -9,5 +9,6 @@ namespace Imagegram.Api.Services
     {
         Task<ProjectionModels.Account> CreateAsync(EntityModels.Account account);
         Task<ProjectionModels.Account> DeleteAsync(Guid id);
+        Task<ProjectionModels.Account> GetAsync(Guid id);
     }
 }

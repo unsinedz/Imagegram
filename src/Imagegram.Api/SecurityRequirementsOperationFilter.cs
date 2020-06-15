@@ -30,7 +30,7 @@ namespace Imagegram.Api
                     Reference = new OpenApiReference
                     {
                         Type = ReferenceType.SecurityScheme,
-                        Id = Constants.Authorization.SecutirySchemeName
+                        Id = Constants.Authentication.SecuritySchemeName
                     }
                 };
                 operation.Security = new List<OpenApiSecurityRequirement>

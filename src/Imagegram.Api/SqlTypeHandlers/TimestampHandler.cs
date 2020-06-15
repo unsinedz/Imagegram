@@ -5,7 +5,7 @@ using Dapper;
 
 namespace Imagegram.Api.SqlTypeMaps
 {
-    public class Int64Handler : SqlMapper.TypeHandler<long>
+    public class TimestampHandler : SqlMapper.TypeHandler<long>
     {
         public override long Parse(object value)
         {

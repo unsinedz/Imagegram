@@ -12,28 +12,28 @@ namespace Imagegram.Api.Authentication
 {
     public class HeaderBasedAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        private readonly IAccountRepository accountRepository;
+        private readonly IAccountService accountService;
 
         public HeaderBasedAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
-            IAccountRepository accountRepository,
+            IAccountService accountService,
             ISystemClock clock) : base(options, logger, encoder, clock)
         {
-            this.accountRepository = accountRepository;
+            this.accountService = accountService;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            var headerName = Constants.Authorization.HeaderName;
+            var headerName = Constants.Authentication.HeaderName;
             if (!Request.Headers.TryGetValue(headerName, out var accountIdValue))
                 return AuthenticateResult.Fail($"Missing {headerName} header.");
 
             if (!Guid.TryParse(accountIdValue.ToString(), out var accountId))
                 return AuthenticateResult.Fail($"Invalid {headerName} header value.");
 
-            var existingAccount = (await accountRepository.GetAsync(accountId)).SingleOrDefault();
+            var existingAccount = await accountService.GetAsync(accountId);
             if (existingAccount == null)
                 return AuthenticateResult.Fail($"Account does not exist.");
 

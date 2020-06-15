@@ -62,7 +62,7 @@ namespace Imagegram.Api.Controllers
         [HttpGet("posts/{postId:required}/[controller]")]
         public async Task<ICollection<ApiModels.Comment>> GetAsync(Guid postId, int? limit, long? previousCommentCursor)
         {
-            var comments = await commentService.GetLatestByPostAsync(postId, limit, previousCommentCursor);
+            var comments = await commentService.GetByPostAsync(postId, limit, previousCommentCursor);
             return comments.Select(x => mapper.Map<ApiModels.Comment>(x)).ToList();
         }
     }

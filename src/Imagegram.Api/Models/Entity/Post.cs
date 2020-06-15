@@ -16,6 +16,6 @@ namespace Imagegram.Api.Models.Entity
         public DateTime CreatedAt { get; set; }
 
         [Write(false)]
-        public long VersionCursor { get; set; }
+        public long ItemCursor { get; set; }
     }
 }

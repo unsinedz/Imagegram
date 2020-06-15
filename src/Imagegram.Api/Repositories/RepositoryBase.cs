@@ -1,6 +1,7 @@
 using System.Data;
+using Imagegram.Api.Services;
 
-namespace Imagegram.Api.Services
+namespace Imagegram.Api.Repositories
 {
     public abstract class RepositoryBase
     {

@@ -23,9 +23,9 @@ namespace Imagegram.Api.Controllers
         private readonly IAccountService accountService;
         private readonly IMapper mapper;
 
-        public AccountsController(IAccountService accountRepository, IMapper mapper)
+        public AccountsController(IAccountService accountService, IMapper mapper)
         {
-            this.accountService = accountRepository;
+            this.accountService = accountService;
             this.mapper = mapper;
         }
 
