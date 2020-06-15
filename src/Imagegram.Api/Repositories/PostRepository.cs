@@ -130,6 +130,7 @@ namespace Imagegram.Api.Repositories
                         },
                         new { limit, previousPostCursor, perPostCommentLimit = 3 },
                         transaction);
+                    transaction.Commit();
                     return posts.GroupBy(x => x.Id)
                         .Select(x => x.Aggregate((acc, current) =>
                         {
