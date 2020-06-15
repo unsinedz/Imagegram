@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Imagegram.Api.Exceptions;
@@ -36,28 +35,12 @@ namespace Imagegram.Api.Services
             await ValidatePostIdAsync(comment.PostId);
 
             var createdId = await commentRepository.CreateAsync(comment);
-            var commentTask = commentRepository.GetAsync(createdId);
-            var accountsTask = accountRepository.GetAsync(comment.CreatorId);
-            await Task.WhenAll(commentTask, accountsTask);
-
-            var commentProjection = mapper.Map<ProjectionModels.Comment>(commentTask.Result);
-            commentProjection.Creator = mapper.Map<ProjectionModels.Account>(accountsTask.Result.Single());
-            return commentProjection;
+            return await commentRepository.GetAsync(createdId);
         }
 
-        public async Task<ICollection<ProjectionModels.Comment>> GetLatestByPostAsync(Guid postId, int? limit, long? previousCommentCursor)
+        public async Task<ICollection<ProjectionModels.Comment>> GetByPostAsync(Guid postId, int? limit, long? previousCommentCursor)
         {
-            await ValidatePostIdAsync(postId);
-
-            var comments = await commentRepository.GetByPostAsync(postId, limit, previousCommentCursor);
-            var accounts = (await accountRepository.GetAsync(comments.Select(x => x.CreatorId).Distinct().ToArray()))
-                .ToDictionary(x => x.Id);
-            return comments.Select(x =>
-            {
-                var comment = mapper.Map<ProjectionModels.Comment>(x);
-                comment.Creator = mapper.Map<ProjectionModels.Account>(accounts[x.CreatorId]);
-                return comment;
-            }).ToList();
+            return await commentRepository.GetByPostAsync(postId, limit, previousCommentCursor);
         }
 
         private async Task ValidatePostIdAsync(Guid postId)
