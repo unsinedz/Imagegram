@@ -26,13 +26,13 @@ Project structure is the following:
 - **Imagegram.sln** - the solution file.
 
 Business logic services are located in the *Imagegram.Api.Services* namespace.
-Entity persistence is implemented using the *Repository* pattern and lightweight *Dapper* ORM.
+Entity persistence is implemented using the *Repository* pattern and lightweight *Dapper* ORM. Queries were placed directly at the repositories for simplicity (it is only a test task, not an enterprise project).
 In order to separate business logic layers *Controllers* use *Services* for the entity operations, not *Repositories* directly.
 *File storage* and *Post* options can be configured via application settings.
 
 ##License
 
-The software is licensed under the MIT license. More details can be found in the *LICENSE.txt* file located at the repository root.
+This software is licensed under the MIT license. More details can be found in the *LICENSE.txt* file located at the repository root.
 
 ##Author
 
